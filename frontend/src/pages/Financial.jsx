@@ -20,6 +20,7 @@ import {
 } from 'recharts';
 import { AnalysisContext } from '../App';
 import ProvenanceBadge from '../components/ProvenanceBadge';
+import VoiceButton from '../components/VoiceButton';
 
 export default function Financial() {
   const { analysis } = useContext(AnalysisContext);
@@ -30,7 +31,7 @@ export default function Financial() {
 
   if (!analysis) {
     return (
-      <div className="max-w-md mx-auto my-16 p-8 gd-card text-center space-y-4">
+      <div className="w-full max-w-5xl mx-auto px-4 my-16 max-w-md p-8 gd-card text-center space-y-4">
         <h3 className="text-lg font-bold text-[var(--color-text)]">
           {isHi ? 'कोई सक्रिय विश्लेषण नहीं मिला' : 'No Active Analysis'}
         </h3>
@@ -63,21 +64,32 @@ export default function Financial() {
     ? quarterly_repayment || []
     : (quarterly_repayment || []).slice(0, 8);
 
+  const voiceFinancialText = isHi
+    ? `वित्तीय संरचना: कुल लागत ₹${(financial.project_cost / 100000).toFixed(1)} लाख है। आपकी पूंजी ₹${(financial.margin_capital / 100000).toFixed(1)} लाख और बैंक लोन ₹${(financial.loan_amount / 100000).toFixed(1)} लाख है। महीने की किस्त ₹${financial.monthly_emi} है।`
+    : `Financial structure: Total cost is ₹${financial.project_cost.toLocaleString('en-IN')}. Your margin is ₹${financial.margin_capital.toLocaleString('en-IN')} and bank loan is ₹${financial.loan_amount.toLocaleString('en-IN')} under ${displayScheme}. Monthly EMI is ₹${financial.monthly_emi}.`;
+
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6 sm:space-y-8">
+    <div className="app-container py-6 sm:py-10 space-y-6 sm:space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--color-border)] pb-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--color-text)] tracking-tight">
-            {isHi ? 'वित्तीय संरचना व ऋण विवरण' : 'Financial Structure & Loan Details'}
+          <h1 className="text-2xl sm:text-3xl font-black text-[var(--color-text)] tracking-tight">
+            {isHi ? '💰 वित्तीय संरचना व बैंक ऋण विवरण' : '💰 Financial Structure & Loan Details'}
           </h1>
-          <p className="text-xs sm:text-sm text-[var(--color-text-muted)] mt-1">
+          <p className="text-xs sm:text-sm text-[var(--color-text-muted)] mt-1 font-medium">
             {isHi
-              ? 'गणितीय 10:90 पूंजी अनुपात, आधिकारिक बैंक योजना व ऋण शोधन अनुसूची'
+              ? '10:90 पूंजी अनुपात, आधिकारिक बैंक योजना व ऋण शोधन अनुसूची'
               : 'Deterministic 10:90 capital structure, official banking scheme & amortization'}
           </p>
         </div>
-        <ProvenanceBadge type="calculated" />
+        <div className="flex items-center gap-2">
+          <VoiceButton
+            text={voiceFinancialText}
+            language={i18n.language}
+            label={isHi ? 'विवरण सुनें 🔊' : 'Listen 🔊'}
+          />
+          <ProvenanceBadge type="calculated" />
+        </div>
       </div>
 
       {/* Grid: Capital Structure & Scheme Rule */}

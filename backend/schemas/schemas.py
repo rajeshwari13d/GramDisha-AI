@@ -4,7 +4,7 @@ GramDisha AI — Pydantic Request/Response Schemas
 Validates all API input/output with strict typing.
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from typing import Literal, Optional
 
 
@@ -16,8 +16,19 @@ class AnalysisRequest(BaseModel):
     block: str = Field(..., min_length=1, description="Block name")
     village: str = Field(..., min_length=1, description="Village name")
     capital: float = Field(..., gt=0, description="Available capital in INR")
-    business: str = Field(..., min_length=1, description="Business category")
+    business: Optional[str] = Field(default=None, description="Business category")
+    business_category: Optional[str] = Field(default=None, description="Business category alias")
     language: Literal["en", "hi"] = Field(default="en", description="Language code")
+
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_business_field(cls, data):
+        if isinstance(data, dict):
+            biz = data.get("business") or data.get("business_category")
+            if not biz:
+                raise ValueError("Business field is required (either 'business' or 'business_category').")
+            data["business"] = biz
+        return data
 
 
 class FinancialRequest(BaseModel):

@@ -1,7 +1,7 @@
 import { useState, createContext, useContext } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, X, Globe, ChevronRight } from 'lucide-react';
+import { Menu, X, ChevronRight, Home, FileText, TrendingUp, BarChart3, PlusCircle } from 'lucide-react';
 import Landing from './pages/Landing';
 import Assessment from './pages/Assessment';
 import Processing from './pages/Processing';
@@ -13,85 +13,129 @@ import Recommendations from './pages/Recommendations';
 import Comparison from './pages/Comparison';
 import Report from './pages/Report';
 import FloatingChat from './components/FloatingChat';
+import Button from './components/ui/Button';
 
 // Global analysis context
 export const AnalysisContext = createContext(null);
 
 function Navbar() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isHi = i18n.language === 'hi';
   const hasAnalysis = location.pathname !== '/' && location.pathname !== '/assess' && location.pathname !== '/processing';
 
   const navLinks = [
-    { to: '/dashboard', label: t('nav.dashboard') },
-    { to: '/financial', label: t('nav.financial') },
-    { to: '/market', label: t('nav.market') },
-    { to: '/report', label: t('nav.report') },
+    { to: '/dashboard', label: isHi ? 'नतीजा' : 'Results', icon: BarChart3 },
+    { to: '/financial', label: isHi ? 'लोन व किस्त' : 'Loan & EMI', icon: TrendingUp },
+    { to: '/market', label: isHi ? 'बाजार मांग' : 'Market Demand', icon: Home },
+    { to: '/report', label: isHi ? 'बैंक फाइल' : 'Bank Proposal', icon: FileText },
   ];
 
-  const toggleLang = () => {
-    const newLang = i18n.language === 'en' ? 'hi' : 'en';
+  const setLang = (newLang) => {
     i18n.changeLanguage(newLang);
     localStorage.setItem('gramdisha-lang', newLang);
     document.documentElement.lang = newLang;
   };
 
   return (
-    <nav className="no-print sticky top-0 z-40 bg-[var(--color-surface)] border-b border-[var(--color-border)] shadow-xs">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
-        {/* Brand */}
+    <nav className="no-print sticky top-0 z-40 bg-white border-b border-[#DCD3C5] shadow-xs">
+      <div className="app-container h-16 sm:h-18 flex items-center justify-between gap-4">
+        {/* Logo Lockup */}
         <Link
           to="/"
           onClick={() => setMobileMenuOpen(false)}
-          className="flex items-center gap-2 text-[var(--color-text)] font-bold text-base sm:text-lg focus-visible:outline-2"
+          className="inline-flex items-center gap-2.5 sm:gap-3 select-none shrink-0"
         >
-          <span className="text-2xl" aria-hidden="true">🌾</span>
-          <span className="tracking-tight text-[var(--color-positive)] font-extrabold">GramDisha AI</span>
+          <div className="w-10 h-10 rounded-xl bg-[#F4EFEB] border border-[#DCD3C5] flex items-center justify-center text-2xl shrink-0 shadow-xs">
+            🌾
+          </div>
+          <div className="flex flex-col justify-center">
+            <span className="text-gray-900 font-black text-lg sm:text-xl leading-tight">
+              GramDisha AI
+            </span>
+            <span className="text-[11px] font-semibold text-gray-500 leading-tight">
+              {isHi ? 'ग्रामीण व्यवसाय योजना' : 'Rural Enterprise Intel'}
+            </span>
+          </div>
         </Link>
 
-        {/* Desktop Navigation */}
-        <div className="flex items-center gap-2">
+        {/* Right-Side Controls */}
+        <div className="flex items-center gap-3">
           {hasAnalysis && (
-            <div className="hidden lg:flex items-center gap-1 text-xs sm:text-sm">
+            <div className="hidden md:flex items-center gap-1.5 mr-2">
               {navLinks.map((n) => {
                 const isActive = location.pathname === n.to;
+                const Icon = n.icon;
                 return (
                   <Link
                     key={n.to}
                     to={n.to}
-                    className={`px-3 py-1.5 rounded-lg transition-colors font-medium ${
+                    className={`inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                       isActive
-                        ? 'bg-[var(--color-positive-bg)] text-[var(--color-positive)] font-bold'
-                        : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]'
+                        ? 'bg-[#1B5E20] text-white shadow-xs'
+                        : 'text-gray-700 hover:text-gray-900 hover:bg-[#F4EFEB]'
                     }`}
                   >
-                    {n.label}
+                    <Icon className="w-4 h-4 shrink-0" />
+                    <span>{n.label}</span>
                   </Link>
                 );
               })}
             </div>
           )}
 
-          {/* Language Switcher */}
-          <button
-            onClick={toggleLang}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-subtle)] text-[var(--color-text)]"
-            aria-label="Toggle language between English and Hindi"
+          {/* New Assessment Button */}
+          <Button
+            to="/assess"
+            size="sm"
+            variant="primary"
+            icon={PlusCircle}
+            iconPosition="left"
+            className="shrink-0 shadow-xs"
           >
-            <Globe className="w-3.5 h-3.5 text-[var(--color-text-muted)]" />
-            <span>{i18n.language === 'en' ? 'हिंदी' : 'English'}</span>
-          </button>
+            {isHi ? 'नया व्यापार' : 'New Plan'}
+          </Button>
 
-          {/* Mobile Menu Toggle Button */}
+          {/* Two-Segment Language Toggle */}
+          <div
+            className="inline-flex items-center p-1 rounded-xl bg-[#F4EFEB] border border-[#DCD3C5] select-none shrink-0 gap-1"
+            role="group"
+            aria-label="Language selection"
+          >
+            <button
+              type="button"
+              onClick={() => setLang('en')}
+              className={`px-3.5 py-1.5 min-h-[34px] text-xs font-bold rounded-lg transition-all duration-150 cursor-pointer flex items-center justify-center ${
+                !isHi
+                  ? 'bg-[#1B5E20] text-white shadow-xs'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/60'
+              }`}
+            >
+              English
+            </button>
+            <button
+              type="button"
+              onClick={() => setLang('hi')}
+              className={`px-3.5 py-1.5 min-h-[34px] text-xs font-bold rounded-lg transition-all duration-150 cursor-pointer flex items-center justify-center ${
+                isHi
+                  ? 'bg-[#1B5E20] text-white shadow-xs'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/60'
+              }`}
+            >
+              हिन्दी
+            </button>
+          </div>
+
+          {/* Mobile Menu Button */}
           {hasAnalysis && (
             <button
+              type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-surface-subtle)] transition-colors border border-[var(--color-border)]"
-              aria-label="Open Navigation Menu"
-              aria-expanded={mobileMenuOpen}
+              className="md:hidden inline-flex items-center justify-center p-2 min-h-[38px] min-w-[38px] rounded-xl text-gray-700 hover:bg-[#F4EFEB] border border-[#DCD3C5] cursor-pointer"
+              aria-label="Menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-5 h-5 shrink-0" /> : <Menu className="w-5 h-5 shrink-0" />}
             </button>
           )}
         </div>
@@ -99,22 +143,24 @@ function Navbar() {
 
       {/* Mobile Drawer */}
       {hasAnalysis && mobileMenuOpen && (
-        <div className="lg:hidden border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 shadow-lg space-y-1">
+        <div className="md:hidden border-t border-[#DCD3C5] bg-white px-4 py-3 space-y-1.5">
           {navLinks.map((n) => {
             const isActive = location.pathname === n.to;
+            const Icon = n.icon;
             return (
               <Link
                 key={n.to}
                 to={n.to}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
-                  isActive
-                    ? 'bg-[var(--color-positive-bg)] text-[var(--color-positive)]'
-                    : 'text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]'
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-bold ${
+                  isActive ? 'bg-[#1B5E20] text-white' : 'text-gray-800 hover:bg-[#F4EFEB]'
                 }`}
               >
-                <span>{n.label}</span>
-                <ChevronRight className="w-4 h-4 text-[var(--color-text-subtle)]" />
+                <div className="flex items-center gap-2.5">
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span>{n.label}</span>
+                </div>
+                <ChevronRight className="w-4 h-4 opacity-50 shrink-0" />
               </Link>
             );
           })}
@@ -130,9 +176,9 @@ function AppContent() {
 
   return (
     <AnalysisContext.Provider value={{ analysis, setAnalysis, formData, setFormData }}>
-      <div className="min-h-screen flex flex-col bg-[var(--color-bg)] text-[var(--color-text)]">
+      <div className="min-h-screen w-full flex flex-col bg-[#FAF8F5] text-[#1C1917]">
         <Navbar />
-        <main className="flex-1">
+        <main className="flex-1 w-full">
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/assess" element={<Assessment />} />

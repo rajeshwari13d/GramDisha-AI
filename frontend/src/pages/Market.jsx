@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { AnalysisContext } from '../App';
 import ProvenanceBadge from '../components/ProvenanceBadge';
+import VoiceButton from '../components/VoiceButton';
 
 export default function Market() {
   const { analysis } = useContext(AnalysisContext);
@@ -21,7 +22,7 @@ export default function Market() {
 
   if (!analysis) {
     return (
-      <div className="max-w-md mx-auto my-16 p-8 gd-card text-center space-y-4">
+      <div className="w-full max-w-5xl mx-auto px-4 my-16 max-w-md p-8 gd-card text-center space-y-4">
         <h3 className="text-lg font-bold text-[var(--color-text)]">
           {isHi ? 'कोई सक्रिय विश्लेषण नहीं मिला' : 'No Active Analysis'}
         </h3>
@@ -55,19 +56,30 @@ export default function Market() {
     ? opportunity_insights
     : (isHi ? opportunity_insights?.insights_hi : null) || opportunity_insights?.insights || opportunity_insights?.insight || null;
 
+  const voiceMarketText = isHi
+    ? `बाजार व ग्राहक विश्लेषण: प्राथमिक सेवा दायरा ${reach.primary_km} किलोमीटर है। इस क्षेत्र में प्रतियोगिता का स्तर संतुलित है और अवसर स्कोर ${opportunity?.score || 80} है।`
+    : `Market analysis: Primary catchment radius is ${reach.primary_km} km. Opportunity score is ${opportunity?.score || 80}.`;
+
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6 sm:space-y-8">
+    <div className="app-container py-6 sm:py-10 space-y-6 sm:space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--color-border)] pb-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--color-text)] tracking-tight">
-            {t('market.title')}
+          <h1 className="text-2xl sm:text-3xl font-black text-[var(--color-text)] tracking-tight">
+            {isHi ? '🏪 बाजार मांग, ग्राहक व प्रतियोगिता' : '🏪 Market Demand & Competition'}
           </h1>
-          <p className="text-xs sm:text-sm text-[var(--color-text-muted)] mt-1">
-            {t('market.subtitle')} • <span className="font-bold text-[var(--color-text)]">{displayName}</span>
+          <p className="text-xs sm:text-sm text-[var(--color-text-muted)] mt-1 font-medium">
+            {isHi ? 'स्थानीय ग्राहक क्षेत्र, मूल्य निर्धारण और प्रतियोगिता का विश्लेषण' : 'Local footfall catchment radius and benchmark pricing'}
           </p>
         </div>
-        <ProvenanceBadge type="prototype" />
+        <div className="flex items-center gap-2">
+          <VoiceButton
+            text={voiceMarketText}
+            language={i18n.language}
+            label={isHi ? 'बाजार विवरण सुनें 🔊' : 'Listen 🔊'}
+          />
+          <ProvenanceBadge type="calculated" />
+        </div>
       </div>
 
       {/* Grid: Reach & Customer Segments */}

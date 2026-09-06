@@ -1,389 +1,502 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-  MapPin,
-  Coins,
-  Briefcase,
-  ArrowRight,
-  Info,
-  AlertCircle,
-  Check,
-} from 'lucide-react';
+import { ArrowRight, ArrowLeft, MapPin, AlertCircle, Coins, Check } from 'lucide-react';
 import { AnalysisContext } from '../App';
-import { getLocations, getCategories } from '../services/api';
-import ProvenanceBadge from '../components/ProvenanceBadge';
+import { getLocations } from '../services/api';
+import Button from '../components/ui/Button';
 
 const DEFAULT_LOCATIONS = {
   states: [
     {
-      name: 'Maharashtra',
-      name_hi: 'महाराष्ट्र',
-      districts: [
-        {
-          name: 'Dhule',
-          name_hi: 'धुळे',
-          blocks: [
-            {
-              name: 'Shirpur',
-              name_hi: 'शिरपूर',
-              villages: [
-                { name: 'Demo Village', name_hi: 'डेमो गांव' },
-                { name: 'Shirpur Town', name_hi: 'शिरपूर शहर' },
-              ],
-            },
-            {
-              name: 'Dhule City',
-              name_hi: 'धुळे शहर',
-              villages: [
-                { name: 'Dhule Urban', name_hi: 'धुळे शहरी' },
-              ],
-            },
+      name: 'Maharashtra', name_hi: 'महाराष्ट्र',
+      districts: [{
+        name: 'Dhule', name_hi: 'धुळे',
+        blocks: [{
+          name: 'Shirpur', name_hi: 'शिरपूर',
+          villages: [
+            { name: 'Demo Village', name_hi: 'डेमो गांव' },
+            { name: 'Shirpur Rural', name_hi: 'शिरपूर ग्रामीण' },
+            { name: 'Holnanthe', name_hi: 'होलनांथे' },
           ],
-        },
-      ],
+        }],
+      }],
+    },
+    {
+      name: 'Madhya Pradesh', name_hi: 'मध्य प्रदेश',
+      districts: [{
+        name: 'Indore', name_hi: 'इंदौर',
+        blocks: [{
+          name: 'Sanwer', name_hi: 'सांवेर',
+          villages: [{ name: 'Sanwer Gram', name_hi: 'सांवेर ग्राम' }],
+        }],
+      }],
+    },
+    {
+      name: 'Uttar Pradesh', name_hi: 'उत्तर प्रदेश',
+      districts: [{
+        name: 'Varanasi', name_hi: 'वाराणसी',
+        blocks: [{
+          name: 'Kashi Rural', name_hi: 'काशी ग्रामीण',
+          villages: [{ name: 'Shivpur Gram', name_hi: 'शिवपुर ग्राम' }],
+        }],
+      }],
     },
   ],
 };
 
-const DEFAULT_BUSINESSES = [
-  { id: 'dairy', name: 'Dairy', name_hi: 'डेयरी उद्योग', icon: '🥛' },
-  { id: 'retail', name: 'Retail', name_hi: 'किराना दुकान / खुदरा', icon: '🏪' },
-  { id: 'poultry', name: 'Poultry', name_hi: 'मुर्गी पालन', icon: '🐔' },
-  { id: 'tailoring', name: 'Tailoring', name_hi: 'सिलाई व वस्त्र निर्माण', icon: '🧵' },
-  { id: 'food_processing', name: 'Food Processing', name_hi: 'खाद्य प्रसंस्करण', icon: '🌾' },
-  { id: 'textile', name: 'Textile', name_hi: 'कपड़ा व हथकरघा', icon: '🧶' },
-  { id: 'agriculture', name: 'Agriculture', name_hi: 'कृषि सेवा केंद्र', icon: '🚜' },
-  { id: 'small_manufacturing', name: 'Small Manufacturing', name_hi: 'लघु विनिर्माण', icon: '⚙️' },
-  { id: 'service_business', name: 'Service Business', name_hi: 'सेवा व्यवसाय', icon: '🔧' },
-  { id: 'handicraft', name: 'Handicraft', name_hi: 'हस्तशिल्प व कला', icon: '🎨' },
+const ALL_BUSINESSES = [
+  { id: 'dairy', name: 'Dairy & Milk Chilling', name_hi: 'डेयरी व दूध केंद्र', icon: '🥛', desc_hi: 'गाय-भैंस दूध संकलन व चिलिंग सप्लाई', desc_en: 'Milk procurement & chilling' },
+  { id: 'retail', name: 'Kirana & Grocery Store', name_hi: 'किराना दुकान व जनरल स्टोर', icon: '🏪', desc_hi: 'दैनिक घरेलू राशन व आवश्यक वस्तुएं', desc_en: 'Daily household groceries' },
+  { id: 'poultry', name: 'Poultry Farm (Broiler/Layer)', name_hi: 'मुर्गी पालन (पोल्ट्री)', icon: '🐔', desc_hi: 'अंडे व ब्रायलर उत्पादन व सप्लाई', desc_en: 'Egg & broiler bird farming' },
+  { id: 'food_processing', name: 'Flour Mill (Atta Chakki)', name_hi: 'आटा चक्की व मसाला पिसाई', icon: '🌾', desc_hi: 'गेहूं, अनाज व मसाले पिसाई', desc_en: 'Grain & spice milling' },
+  { id: 'tailoring', name: 'Tailoring & Garments', name_hi: 'सिलाई व वस्त्र केंद्र', icon: '🧵', desc_hi: 'कपड़े सिलाई, स्कूल ड्रेस व रेडीमेड', desc_en: 'Stitching & garments' },
+  { id: 'agriculture', name: 'Tractor & Agro Machinery', name_hi: 'ट्रैक्टर व कृषि सेवा', icon: '🚜', desc_hi: 'खेती उपकरण किराया व सेवा केंद्र', desc_en: 'Farm equipment hire' },
+  { id: 'service_business', name: 'Motor & Bike Workshop', name_hi: 'बाइक व मोटर रिपेयर', icon: '🔧', desc_hi: 'गाड़ी मरम्मत, पंचर व स्पेयर पार्ट्स', desc_en: 'Vehicle repair service' },
+  { id: 'handicraft', name: 'Handicraft & Pottery', name_hi: 'हस्तशिल्प व कुटीर उद्योग', icon: '🎨', desc_hi: 'मिट्टी, लकड़ी व हस्तशिल्प उत्पाद', desc_en: 'Artisan craftwork' },
+];
+
+const CAPITAL_PRESETS = [
+  { value: 25000, label_hi: '₹25,000', label_en: '₹25K', sub_hi: 'छोटे स्तर पर', sub_en: 'Small' },
+  { value: 50000, label_hi: '₹50,000', label_en: '₹50K', sub_hi: 'शुरुआती', sub_en: 'Starter' },
+  { value: 100000, label_hi: '₹1,00,000 (1 लाख)', label_en: '₹1 Lakh', sub_hi: 'सबसे लोकप्रिय', sub_en: 'Popular' },
+  { value: 200000, label_hi: '₹2,00,000 (2 लाख)', label_en: '₹2 Lakh', sub_hi: 'मध्यम स्तर', sub_en: 'Medium' },
+  { value: 500000, label_hi: '₹5,00,000 (5 लाख)', label_en: '₹5 Lakh', sub_hi: 'बड़ा स्तर', sub_en: 'Large' },
 ];
 
 export default function Assessment() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { setFormData } = useContext(AnalysisContext);
   const isHi = i18n.language === 'hi';
 
-  const [locations, setLocations] = useState(DEFAULT_LOCATIONS);
-  const [businesses, setBusinesses] = useState(DEFAULT_BUSINESSES);
+  const routerState = location.state || {};
 
-  // Form states
+  const [locations, setLocations] = useState(DEFAULT_LOCATIONS);
+  const [step, setStep] = useState(1);
+  const [selectedBusiness, setSelectedBusiness] = useState(routerState.presetBusiness || 'dairy');
   const [selectedState, setSelectedState] = useState('Maharashtra');
   const [selectedDistrict, setSelectedDistrict] = useState('Dhule');
   const [selectedBlock, setSelectedBlock] = useState('Shirpur');
   const [selectedVillage, setSelectedVillage] = useState('Demo Village');
-  const [capital, setCapital] = useState('100000');
-  const [selectedBusiness, setSelectedBusiness] = useState('dairy');
+  const [capital, setCapital] = useState(routerState.presetCapital ? String(routerState.presetCapital) : '100000');
   const [error, setError] = useState('');
 
   useEffect(() => {
-    getLocations()
-      .then((res) => {
-        if (res.data?.states && res.data.states.length > 0) {
-          setLocations(res.data);
-        } else if (res.data?.locations?.states) {
-          setLocations(res.data.locations);
-        }
-      })
-      .catch(() => {});
-
-    getCategories()
-      .then((res) => {
-        if (res.data?.categories && res.data.categories.length > 0) {
-          setBusinesses(res.data.categories);
-        }
-      })
-      .catch(() => {});
+    getLocations().then((res) => {
+      if (res.data?.states?.length > 0) setLocations(res.data);
+      else if (res.data?.locations?.states) setLocations(res.data.locations);
+    }).catch(() => {});
   }, []);
 
-  // Cascading lists
-  const currentStateObj = locations.states.find((s) => s.name === selectedState) || locations.states[0];
-  const districts = currentStateObj?.districts || [];
-  const currentDistrictObj = districts.find((d) => d.name === selectedDistrict) || districts[0];
-  const blocks = currentDistrictObj?.blocks || [];
-  const currentBlockObj = blocks.find((b) => b.name === selectedBlock) || blocks[0];
-  const villages = currentBlockObj?.villages || [];
+  // Cascading
+  const states = locations.states || [];
+  const stateObj = states.find((s) => s.name === selectedState) || states[0];
+  const districts = stateObj?.districts || [];
+  const distObj = districts.find((d) => d.name === selectedDistrict) || districts[0];
+  const blocks = distObj?.blocks || [];
+  const blockObj = blocks.find((b) => b.name === selectedBlock) || blocks[0];
+  const villages = blockObj?.villages || [];
 
-  // Live calculation preview
-  const numCapital = Math.max(0, parseFloat(capital) || 0);
-  const projectedProjectCost = numCapital * 10;
-  const projectedLoan = numCapital * 9;
+  const handleStateChange = (stateName) => {
+    setSelectedState(stateName);
+    const st = states.find((s) => s.name === stateName);
+    const d = st?.districts?.[0]; setSelectedDistrict(d?.name || '');
+    const bl = d?.blocks?.[0]; setSelectedBlock(bl?.name || '');
+    setSelectedVillage(bl?.villages?.[0]?.name || '');
+  };
+
+  const handleDistrictChange = (distName) => {
+    setSelectedDistrict(distName);
+    const d = districts.find((dist) => dist.name === distName);
+    const bl = d?.blocks?.[0]; setSelectedBlock(bl?.name || '');
+    setSelectedVillage(bl?.villages?.[0]?.name || '');
+  };
+
+  const handleBlockChange = (blkName) => {
+    setSelectedBlock(blkName);
+    const bl = blocks.find((b) => b.name === blkName);
+    setSelectedVillage(bl?.villages?.[0]?.name || '');
+  };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    const capNum = parseFloat(capital);
+    if (!selectedBusiness) {
+      setError(isHi ? 'कृपया व्यापार चुनें।' : 'Please select a business.');
+      return;
+    }
+    if (!capNum || capNum <= 0) {
+      setError(isHi ? 'कृपया मान्य पूंजी राशि दर्ज करें।' : 'Please enter a valid capital amount.');
+      return;
+    }
     setError('');
-
-    if (!selectedState) return setError(t('assessment.validation.state_required'));
-    if (!selectedDistrict) return setError(t('assessment.validation.district_required'));
-    if (!selectedBlock) return setError(t('assessment.validation.block_required'));
-    if (!selectedVillage) return setError(t('assessment.validation.village_required'));
-    if (!numCapital || numCapital <= 0) return setError(t('assessment.validation.capital_positive'));
-    if (numCapital > 5000000) return setError(t('assessment.validation.capital_max'));
-    if (!selectedBusiness) return setError(t('assessment.validation.business_required'));
-
-    const data = {
+    const payload = {
       state: selectedState,
       district: selectedDistrict,
       block: selectedBlock,
       village: selectedVillage,
-      capital: numCapital,
+      capital: capNum,
       business: selectedBusiness,
-      language: i18n.language === 'hi' ? 'hi' : 'en',
+      business_category: selectedBusiness,
     };
-
-    setFormData(data);
-    navigate('/processing', { state: data });
+    setFormData(payload);
+    navigate('/processing', { state: payload });
   };
 
+  const businessObj = ALL_BUSINESSES.find((b) => b.id === selectedBusiness) || ALL_BUSINESSES[0];
+
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6">
-      {/* Clean Header */}
-      <div className="text-left">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--color-text)] tracking-tight">
-          {t('assessment.title')}
+    <div className="app-container py-14 sm:py-20 space-y-10 max-w-[1040px]">
+      {/* Header */}
+      <div className="text-center space-y-3 border-b border-[#DCD3C5] pb-8">
+        <h1 className="text-2xl sm:text-4xl font-black text-gray-900 tracking-tight">
+          {isHi ? 'अपने गांव के लिए व्यापार योजना बनाएं' : 'Evaluate Your Village Enterprise'}
         </h1>
-        <p className="text-xs sm:text-sm text-[var(--color-text-muted)] mt-1">
-          {t('assessment.subtitle')}
+        <p className="text-sm sm:text-base text-gray-600 font-medium max-w-lg mx-auto">
+          {isHi
+            ? '3 आसान चरणों में व्यापार, स्थान और पूंजी चुनें और बैंक-स्वीकृत मूल्यांकन पाएं।'
+            : 'Complete the 3 simple steps below to generate an official viability report and loan dossier.'}
         </p>
       </div>
 
+      {/* 3 Step Indicator Tabs (+20% padding: p-4.5 sm:p-5) */}
+      <div className="grid grid-cols-3 gap-4 select-none">
+        {[
+          { num: 1, title_hi: '1. काम चुनें', title_en: '1. Business' },
+          { num: 2, title_hi: '2. गांव व स्थान', title_en: '2. Location' },
+          { num: 3, title_hi: '3. बचत व पूंजी', title_en: '3. Capital' },
+        ].map((s) => (
+          <button
+            key={s.num}
+            type="button"
+            onClick={() => setStep(s.num)}
+            className={`p-4.5 sm:p-5 rounded-2xl flex items-center justify-center sm:justify-start gap-3.5 border transition-all cursor-pointer select-none ${
+              step === s.num
+                ? 'bg-white border-2 border-emerald-800 ring-4 ring-emerald-800/15 shadow-sm'
+                : 'bg-white text-gray-700 border-[#DCD3C5] hover:bg-[#F4EFEB]'
+            }`}
+          >
+            <span
+              className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full font-black flex items-center justify-center text-xs sm:text-sm shrink-0 ${
+                step === s.num ? 'bg-emerald-800 text-white' : 'bg-[#F4EFEB] text-gray-700'
+              }`}
+            >
+              {s.num}
+            </span>
+            <span className={`hidden sm:block text-sm sm:text-base font-black leading-none ${step === s.num ? 'text-emerald-950' : 'text-gray-700'}`}>
+              {isHi ? s.title_hi : s.title_en}
+            </span>
+          </button>
+        ))}
+      </div>
+
       {error && (
-        <div
-          role="alert"
-          className="p-3.5 rounded-xl border flex items-start gap-2.5 text-xs sm:text-sm font-medium"
-          style={{
-            backgroundColor: 'var(--color-negative-bg)',
-            color: 'var(--color-negative)',
-            borderColor: 'var(--color-negative-border)',
-          }}
-        >
-          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-          <span>{error}</span>
+        <div className="p-5 rounded-2xl bg-red-50 border border-red-200 text-red-900 font-bold flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
+          <span className="leading-none">{error}</span>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Column (5 cols desktop): Location & Capital with live 10:90 preview */}
-          <div className="lg:col-span-5 space-y-5">
-            {/* Section 1: Location */}
-            <div className="gd-card p-4 sm:p-5 space-y-4">
-              <div className="flex items-center gap-2 border-b border-[var(--color-border)] pb-2.5 text-[var(--color-text)] font-bold text-sm">
-                <MapPin className="w-4 h-4 text-[var(--color-positive)] shrink-0" />
-                <span>{isHi ? '1. भौगोलिक स्थान' : '1. Location Details'}</span>
-              </div>
+      {/* ══════ STEP 1: BUSINESS PICKER (+20% padding: p-8 sm:p-10) ══════ */}
+      {step === 1 && (
+        <div className="gd-card p-8 sm:p-10 space-y-8 bg-white">
+          <div className="flex items-center justify-between border-b border-gray-100 pb-5">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-black text-gray-900">
+                {isHi ? '1. आप कौन सा काम शुरू करना चाहते हैं?' : '1. Pick the Enterprise You Want to Start'}
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-500 mt-1 font-medium">
+                {isHi ? 'नीचे दिए गए 8 प्रमुख ग्रामीण व्यवसायों में से एक चुनें:' : 'Select one of the 8 rural enterprise models below:'}
+              </p>
+            </div>
+            <span className="text-3xl sm:text-4xl">{businessObj?.icon}</span>
+          </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* State */}
-                <div>
-                  <label htmlFor="select-state" className="gd-label">
-                    {t('assessment.state')}
-                  </label>
-                  <select
-                    id="select-state"
-                    value={selectedState}
-                    onChange={(e) => {
-                      setSelectedState(e.target.value);
-                      const st = locations.states.find((s) => s.name === e.target.value);
-                      if (st && st.districts.length > 0) {
-                        setSelectedDistrict(st.districts[0].name);
-                        setSelectedBlock(st.districts[0].blocks[0]?.name || '');
-                        setSelectedVillage(st.districts[0].blocks[0]?.villages[0]?.name || '');
-                      }
-                    }}
-                    className="gd-select text-xs font-medium"
-                  >
-                    {locations.states.map((s) => (
-                      <option key={s.name} value={s.name}>
-                        {isHi ? s.name_hi || s.name : s.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {ALL_BUSINESSES.map((b) => {
+              const isSelected = selectedBusiness === b.id;
+              return (
+                <button
+                  key={b.id}
+                  type="button"
+                  onClick={() => { setSelectedBusiness(b.id); setError(''); }}
+                  className={`p-6 sm:p-7 rounded-2xl flex flex-col text-left transition-all duration-150 cursor-pointer relative bg-white ${
+                    isSelected
+                      ? 'border-2 border-emerald-800 ring-4 ring-emerald-800/15 shadow-sm'
+                      : 'border border-[#DCD3C5] hover:border-gray-400 hover:shadow-xs'
+                  }`}
+                >
+                  <div className="flex items-center justify-between w-full mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-[#F4EFEB] border border-[#DCD3C5] flex items-center justify-center text-2xl shrink-0">
+                      {b.icon}
+                    </div>
+                    {isSelected && (
+                      <span className="w-7 h-7 rounded-full bg-emerald-800 text-white flex items-center justify-center text-xs shrink-0 shadow-xs">
+                        <Check className="w-4 h-4" />
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-base font-black text-gray-900 leading-tight">
+                    {isHi ? b.name_hi : b.name}
+                  </h3>
+                  <p className="text-xs mt-2 text-gray-500 line-clamp-2 leading-relaxed">
+                    {isHi ? b.desc_hi : b.desc_en}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
 
-                {/* District */}
-                <div>
-                  <label htmlFor="select-district" className="gd-label">
-                    {t('assessment.district')}
-                  </label>
-                  <select
-                    id="select-district"
-                    value={selectedDistrict}
-                    onChange={(e) => {
-                      setSelectedDistrict(e.target.value);
-                      const dt = districts.find((d) => d.name === e.target.value);
-                      if (dt && dt.blocks.length > 0) {
-                        setSelectedBlock(dt.blocks[0].name);
-                        setSelectedVillage(dt.blocks[0].villages[0]?.name || '');
-                      }
-                    }}
-                    className="gd-select text-xs font-medium"
-                  >
-                    {districts.map((d) => (
-                      <option key={d.name} value={d.name}>
-                        {isHi ? d.name_hi || d.name : d.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+          {/* Step 1 Actions */}
+          <div className="pt-8 flex items-center justify-between border-t border-gray-200">
+            <span className="text-sm font-bold text-gray-700">
+              {isHi ? `चुना हुआ: ${businessObj?.name_hi}` : `Selected: ${businessObj?.name}`}
+            </span>
+            <Button
+              onClick={() => setStep(2)}
+              size="md"
+              variant="primary"
+              icon={ArrowRight}
+              iconPosition="right"
+            >
+              {isHi ? 'अगला: स्थान चुनें' : 'Next: Location'}
+            </Button>
+          </div>
+        </div>
+      )}
 
-                {/* Block */}
-                <div>
-                  <label htmlFor="select-block" className="gd-label">
-                    {t('assessment.block')}
-                  </label>
-                  <select
-                    id="select-block"
-                    value={selectedBlock}
-                    onChange={(e) => {
-                      setSelectedBlock(e.target.value);
-                      const bk = blocks.find((b) => b.name === e.target.value);
-                      if (bk && bk.villages.length > 0) {
-                        setSelectedVillage(bk.villages[0].name);
-                      }
-                    }}
-                    className="gd-select text-xs font-medium"
-                  >
-                    {blocks.map((b) => (
-                      <option key={b.name} value={b.name}>
-                        {isHi ? b.name_hi || b.name : b.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+      {/* ══════ STEP 2: LOCATION SELECTOR (+20% padding: p-8 sm:p-10) ══════ */}
+      {step === 2 && (
+        <div className="gd-card p-8 sm:p-10 space-y-8 bg-white">
+          <div className="border-b border-gray-100 pb-5">
+            <h2 className="text-xl sm:text-2xl font-black text-gray-900">
+              {isHi ? '2. आपका गांव या कस्बा कहाँ है?' : '2. Select Your Village Location'}
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1 font-medium">
+              {isHi
+                ? 'राज्य, जिला और गांव चुनें ताकि स्थानीय बाजार और जनसंख्या की गणना की जा सके:'
+                : 'Select your state, district, and village to calculate local customer demand:'}
+            </p>
+          </div>
 
-                {/* Village */}
-                <div>
-                  <label htmlFor="select-village" className="gd-label">
-                    {t('assessment.village')}
-                  </label>
-                  <select
-                    id="select-village"
-                    value={selectedVillage}
-                    onChange={(e) => setSelectedVillage(e.target.value)}
-                    className="gd-select text-xs font-medium"
-                  >
-                    {villages.map((v) => (
-                      <option key={v.name} value={v.name}>
-                        {isHi ? v.name_hi || v.name : v.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-7 bg-[#F4EFEB] p-6 sm:p-8 rounded-3xl border border-[#DCD3C5]">
+            <div>
+              <label className="gd-label flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-emerald-800 shrink-0" />
+                <span>{isHi ? 'राज्य (State)' : 'State'}</span>
+              </label>
+              <select
+                value={selectedState}
+                onChange={(e) => handleStateChange(e.target.value)}
+                className="gd-select font-bold bg-white"
+              >
+                {states.map((s) => (
+                  <option key={s.name} value={s.name}>
+                    {isHi ? s.name_hi || s.name : s.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            {/* Section 2: Capital & 10:90 Live Preview */}
-            <div className="gd-card p-4 sm:p-5 space-y-4">
-              <div className="flex items-center gap-2 border-b border-[var(--color-border)] pb-2.5 text-[var(--color-text)] font-bold text-sm">
-                <Coins className="w-4 h-4 text-[var(--color-positive)] shrink-0" />
-                <span>{isHi ? '2. उपलब्ध पूंजी (मार्जिन)' : '2. Your Margin Capital'}</span>
-              </div>
+            <div>
+              <label className="gd-label flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-emerald-800 shrink-0" />
+                <span>{isHi ? 'जिला (District)' : 'District'}</span>
+              </label>
+              <select
+                value={selectedDistrict}
+                onChange={(e) => handleDistrictChange(e.target.value)}
+                className="gd-select font-bold bg-white"
+              >
+                {districts.map((d) => (
+                  <option key={d.name} value={d.name}>
+                    {isHi ? d.name_hi || d.name : d.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-              <div className="space-y-3">
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] font-bold text-base">
-                    ₹
-                  </span>
-                  <input
-                    id="input-capital"
-                    type="number"
-                    min="5000"
-                    step="5000"
-                    value={capital}
-                    onChange={(e) => setCapital(e.target.value)}
-                    placeholder="e.g. 100000"
-                    className="gd-input pl-8 font-bold text-base sm:text-lg tabular-nums"
-                  />
-                </div>
+            <div>
+              <label className="gd-label flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-emerald-800 shrink-0" />
+                <span>{isHi ? 'ब्लॉक / तहसील (Block)' : 'Block / Taluka'}</span>
+              </label>
+              <select
+                value={selectedBlock}
+                onChange={(e) => handleBlockChange(e.target.value)}
+                className="gd-select font-bold bg-white"
+              >
+                {blocks.map((b) => (
+                  <option key={b.name} value={b.name}>
+                    {isHi ? b.name_hi || b.name : b.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-                {/* Quick chip buttons */}
-                <div className="flex flex-wrap gap-1.5">
-                  {[50000, 100000, 200000, 500000].map((amt) => (
-                    <button
-                      key={amt}
-                      type="button"
-                      onClick={() => setCapital(String(amt))}
-                      className="px-2.5 py-1 text-xs font-semibold rounded-md bg-[var(--color-surface-subtle)] text-[var(--color-text)] hover:bg-[var(--color-surface-muted)] border border-[var(--color-border)] transition-colors tabular-nums min-h-[32px] cursor-pointer"
-                    >
-                      ₹{(amt).toLocaleString('en-IN')}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Compact 10:90 Preview Card */}
-                <div className="p-3.5 rounded-lg bg-[var(--color-surface-subtle)] border border-[var(--color-border)] space-y-2 text-xs">
-                  <div className="flex justify-between items-center text-[var(--color-text-muted)]">
-                    <span>{isHi ? 'पूंजी (10% मार्जिन):' : 'Margin Money (10%):'}</span>
-                    <span className="font-bold text-[var(--color-text)] tabular-nums">₹{numCapital.toLocaleString('en-IN')}</span>
-                  </div>
-                  <div className="flex justify-between items-center text-[var(--color-text-muted)]">
-                    <span>{isHi ? 'परियोजना लागत (10x):' : 'Project Cost (10x):'}</span>
-                    <span className="font-bold text-[var(--color-positive)] tabular-nums">₹{projectedProjectCost.toLocaleString('en-IN')}</span>
-                  </div>
-                  <div className="flex justify-between items-center pt-1.5 border-t border-[var(--color-border)] font-semibold text-[var(--color-text)]">
-                    <span>{isHi ? 'अनुमानित ऋण (90%):' : 'Theoretical Loan (90%):'}</span>
-                    <span className="font-extrabold text-[var(--color-positive)] tabular-nums">₹{projectedLoan.toLocaleString('en-IN')}</span>
-                  </div>
-                </div>
-              </div>
+            <div>
+              <label className="gd-label flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-emerald-800 shrink-0" />
+                <span>{isHi ? 'गांव / कस्बा (Village)' : 'Village'}</span>
+              </label>
+              <select
+                value={selectedVillage}
+                onChange={(e) => setSelectedVillage(e.target.value)}
+                className="gd-select font-bold bg-white"
+              >
+                {villages.map((v) => (
+                  <option key={v.name} value={v.name}>
+                    {isHi ? v.name_hi || v.name : v.name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
-          {/* Right Column (7 cols desktop): Business Category Selection */}
-          <div className="lg:col-span-7 gd-card p-4 sm:p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-2.5">
-              <div className="flex items-center gap-2 text-[var(--color-text)] font-bold text-sm">
-                <Briefcase className="w-4 h-4 text-[var(--color-positive)] shrink-0" />
-                <span>{isHi ? '3. ग्रामीण व्यवसाय चुनें' : '3. Select Rural Business'}</span>
-              </div>
-              <span className="text-xs text-[var(--color-text-subtle)] font-medium">10 Categories</span>
-            </div>
+          <div className="p-5 rounded-2xl bg-white border border-[#DCD3C5] flex items-center gap-3 shadow-xs">
+            <span className="text-2xl">📍</span>
+            <span className="text-sm font-bold text-gray-800">
+              {isHi
+                ? `स्थान: ${selectedVillage}, ब्लॉक ${selectedBlock}, जिला ${selectedDistrict}, ${selectedState}`
+                : `Target: ${selectedVillage}, ${selectedBlock}, ${selectedDistrict}, ${selectedState}`}
+            </span>
+          </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-2.5">
-              {businesses.map((biz) => {
-                const bizId = biz.id || biz.name.toLowerCase().replace(/\s+/g, '_');
-                const isSelected = selectedBusiness === bizId;
+          {/* Step 2 Actions */}
+          <div className="pt-8 flex items-center justify-between border-t border-gray-200">
+            <Button
+              onClick={() => setStep(1)}
+              size="md"
+              variant="secondary"
+              icon={ArrowLeft}
+              iconPosition="left"
+            >
+              {isHi ? 'पिछला' : 'Back'}
+            </Button>
+            <Button
+              onClick={() => setStep(3)}
+              size="md"
+              variant="primary"
+              icon={ArrowRight}
+              iconPosition="right"
+            >
+              {isHi ? 'अगला: पूंजी चुनें' : 'Next: Capital'}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* ══════ STEP 3: CAPITAL & SUBMIT (+20% padding: p-8 sm:p-10) ══════ */}
+      {step === 3 && (
+        <div className="gd-card p-8 sm:p-10 space-y-8 bg-white">
+          <div className="border-b border-gray-100 pb-5">
+            <h2 className="text-xl sm:text-2xl font-black text-gray-900">
+              {isHi ? '3. आपके पास लगाने के लिए कितनी पूंजी है?' : '3. How Much Margin Savings Do You Have?'}
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1 font-medium">
+              {isHi
+                ? 'यह आपकी 10% स्वयं की बचत राशि है। बाकी 90% राशि सरकारी बैंक लोन से मिलेगी:'
+                : 'Your 10% promoter equity. The remaining 90% is financed via term loan:'}
+            </p>
+          </div>
+
+          {/* 5 Preset Chips in a Row */}
+          <div className="space-y-3">
+            <span className="text-xs sm:text-sm font-bold text-gray-500 block">
+              {isHi ? 'राशि चुनें:' : 'Select Margin Amount:'}
+            </span>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+              {CAPITAL_PRESETS.map((p) => {
+                const isSelected = Number(capital) === p.value;
                 return (
                   <button
-                    key={bizId}
+                    key={p.value}
                     type="button"
-                    onClick={() => setSelectedBusiness(bizId)}
-                    className={`p-3 rounded-lg border text-left transition-all flex items-center gap-3 cursor-pointer ${
+                    onClick={() => setCapital(String(p.value))}
+                    className={`p-4 sm:p-5 rounded-2xl flex flex-col items-center text-center transition-all cursor-pointer border select-none bg-white ${
                       isSelected
-                        ? 'bg-[var(--color-positive-bg)] border-[var(--color-positive)] ring-1 ring-[var(--color-positive)] shadow-xs'
-                        : 'bg-[var(--color-surface)] border-[var(--color-border)] hover:bg-[var(--color-surface-subtle)] hover:border-[var(--color-border-strong)]'
+                        ? 'border-2 border-emerald-800 ring-4 ring-emerald-800/15 shadow-sm'
+                        : 'border-[#DCD3C5] hover:border-gray-400 hover:bg-[#F4EFEB]'
                     }`}
-                    aria-pressed={isSelected}
                   >
-                    <span className="text-2xl shrink-0" aria-hidden="true">{biz.icon || '🌾'}</span>
-                    <div className="min-w-0 flex-1">
-                      <span className={`text-xs font-bold block truncate ${isSelected ? 'text-[var(--color-positive)]' : 'text-[var(--color-text)]'}`}>
-                        {isHi ? biz.name_hi || biz.name : biz.name}
-                      </span>
-                    </div>
-                    {isSelected && (
-                      <Check className="w-4 h-4 text-[var(--color-positive)] shrink-0" />
-                    )}
+                    <span className="text-2xl mb-1.5">🪙</span>
+                    <span className="text-base sm:text-lg font-black text-gray-900 leading-tight">
+                      {isHi ? p.label_hi : p.label_en}
+                    </span>
+                    <span className="text-xs font-medium text-gray-500 mt-1 leading-tight">
+                      {isHi ? p.sub_hi : p.sub_en}
+                    </span>
                   </button>
                 );
               })}
             </div>
           </div>
-        </div>
 
-        {/* Action Button */}
-        <div className="sticky bottom-0 sm:static bg-[var(--color-bg)] sm:bg-transparent py-3 sm:py-2 border-t sm:border-t-0 border-[var(--color-border)] z-30 flex justify-center">
-          <button
-            type="submit"
-            className="gd-btn-primary w-full sm:w-auto min-w-[280px] text-sm sm:text-base px-8 py-3 shadow-xs cursor-pointer"
-          >
-            <span>{t('assessment.submit')}</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+          {/* Custom Input */}
+          <div className="p-6 sm:p-7 rounded-3xl bg-[#F4EFEB] border border-[#DCD3C5] space-y-4">
+            <label className="gd-label flex items-center justify-between">
+              <span className="flex items-center gap-2 text-sm sm:text-base font-bold text-gray-800">
+                <Coins className="w-4.5 h-4.5 text-gray-700 shrink-0" />
+                <span>{isHi ? 'या अपनी राशि दर्ज करें (₹):' : 'Or Enter Custom Amount (₹):'}</span>
+              </span>
+              <span className="text-xs sm:text-sm font-bold text-gray-600 tabular-nums">
+                {Number(capital) > 0 && `(₹${(Number(capital) / 100000).toFixed(2)} ${isHi ? 'लाख' : 'Lakh'})`}
+              </span>
+            </label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-bold text-gray-500">₹</span>
+              <input
+                type="number"
+                min="10000"
+                step="5000"
+                value={capital}
+                onChange={(e) => setCapital(e.target.value)}
+                placeholder="100000"
+                className="gd-input pl-10 text-xl sm:text-2xl font-black text-gray-900 bg-white"
+              />
+            </div>
+          </div>
+
+          {/* Neutral Summary Card */}
+          <div className="p-6 sm:p-7 rounded-3xl bg-[#F4EFEB] border border-[#DCD3C5] space-y-3">
+            <h4 className="text-sm sm:text-base font-bold text-gray-800">
+              {isHi ? 'मूल्यांकन विवरण:' : 'Selected Assessment Parameters:'}
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm font-bold text-gray-700">
+              <div>🏢 {isHi ? 'व्यापार:' : 'Business:'} {businessObj?.name_hi || businessObj?.name}</div>
+              <div>📍 {isHi ? 'स्थान:' : 'Location:'} {selectedVillage}, {selectedDistrict}</div>
+              <div>💵 {isHi ? 'आपकी पूंजी:' : 'Your Capital:'} ₹{Number(capital || 0).toLocaleString('en-IN')}</div>
+            </div>
+          </div>
+
+          {/* Step 3 Actions with Button lg */}
+          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-5 border-t border-gray-200">
+            <Button
+              onClick={() => setStep(2)}
+              size="md"
+              variant="secondary"
+              icon={ArrowLeft}
+              iconPosition="left"
+              className="w-full sm:w-auto"
+            >
+              {isHi ? 'पिछला' : 'Back'}
+            </Button>
+
+            <Button
+              onClick={handleSubmit}
+              size="lg"
+              variant="primary"
+              icon={ArrowRight}
+              iconPosition="right"
+              className="w-full sm:w-auto shadow-md"
+            >
+              {isHi ? 'व्यवसाय मूल्यांकन शुरू करें' : 'Run Viability Check'}
+            </Button>
+          </div>
         </div>
-      </form>
+      )}
     </div>
   );
 }
