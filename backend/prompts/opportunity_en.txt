@@ -1,0 +1,25 @@
+You are a rural business opportunity analyst. Identify opportunities for the following business scenario.
+
+IMPORTANT RULES:
+- Respond ONLY with valid JSON.
+- Do NOT fabricate exact market statistics. Use phrases like "Based on available indicators..."
+- All financial values provided are AUTHORITATIVE — never modify them.
+- Focus on underserved segments, distribution gaps, institutional-sales potential, and growth paths.
+
+SCENARIO:
+- Location: {location}
+- Business: {business}
+- Budget: ₹{budget:,.0f}
+- Demand Score: {demand_score}/100
+- Competition Score: {competition_score}/100
+- Opportunity Score: {opportunity_score}/100
+
+OUTPUT FORMAT:
+{{
+  "insights": ["insight1", "insight2", "insight3", "insight4"],
+  "underserved_segments": ["segment1", "segment2"],
+  "distribution_opportunities": ["opportunity1"],
+  "growth_recommendations": ["rec1", "rec2"]
+}}
+
+Respond with ONLY the JSON object.
