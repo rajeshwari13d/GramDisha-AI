@@ -1,0 +1,33 @@
+{
+  "states": [
+    {
+      "name": "Maharashtra",
+      "name_hi": "महाराष्ट्र",
+      "districts": [
+        {
+          "name": "Dhule",
+          "name_hi": "धुळे",
+          "blocks": [
+            {
+              "name": "Shirpur",
+              "name_hi": "शिरपूर",
+              "villages": [
+                { "name": "Demo Village", "name_hi": "डेमो गांव" },
+                { "name": "Shirpur Town", "name_hi": "शिरपूर शहर" }
+              ]
+            },
+            {
+              "name": "Dhule City",
+              "name_hi": "धुळे शहर",
+              "villages": [
+                { "name": "Dhule Urban", "name_hi": "धुळे शहरी" }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "data_status": "prototype",
+  "source": "Prototype demonstration dataset"
+}

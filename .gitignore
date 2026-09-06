@@ -1,0 +1,23 @@
+# GramDisha AI - Dependencies
+node_modules/
+.env
+.env.local
+*.pyc
+__pycache__/
+*.pyo
+*.egg-info/
+dist/
+build/
+.vite/
+reports/*.pdf
+*.log
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+.DS_Store
+Thumbs.db
+backend/venv/
+backend/.venv/
+*.db
+*.sqlite3

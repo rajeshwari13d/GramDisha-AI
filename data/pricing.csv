@@ -1,0 +1,22 @@
+business,product,product_hi,base_price,transport_cost,operating_cost,target_margin,unit,unit_hi
+Dairy,Milk (per litre),दूध (प्रति लीटर),40,2,4,5,litre,लीटर
+Dairy,Curd (per kg),दही (प्रति किलो),50,3,5,7,kg,किलो
+Dairy,Paneer (per kg),पनीर (प्रति किलो),280,10,30,30,kg,किलो
+Dairy,Ghee (per kg),घी (प्रति किलो),500,15,40,45,kg,किलो
+Retail,Grocery Basket,किराना बास्केट,500,20,30,50,basket,बास्केट
+Retail,Daily Essentials Pack,दैनिक ज़रूरत पैक,200,10,15,25,pack,पैक
+Poultry,Eggs (per dozen),अंडे (प्रति दर्ज़न),60,5,8,7,dozen,दर्ज़न
+Poultry,Chicken (per kg),मुर्गा (प्रति किलो),180,10,15,20,kg,किलो
+Textile,Fabric (per metre),कपड़ा (प्रति मीटर),150,10,20,20,metre,मीटर
+Textile,Ready Garment,रेडीमेड कपड़ा,400,15,40,45,piece,पीस
+Food Processing,Pickles (per kg),अचार (प्रति किलो),200,10,25,25,kg,किलो
+Food Processing,Papad (per kg),पापड़ (प्रति किलो),180,8,20,22,kg,किलो
+Food Processing,Flour (per kg),आटा (प्रति किलो),35,3,4,3,kg,किलो
+Tailoring,Shirt Stitching,शर्ट सिलाई,250,0,30,70,piece,पीस
+Tailoring,Blouse Stitching,ब्लाउज सिलाई,200,0,20,80,piece,पीस
+Agriculture,Vegetables (per kg),सब्ज़ी (प्रति किलो),30,5,5,5,kg,किलो
+Agriculture,Wheat (per quintal),गेहूं (प्रति क्विंटल),2200,100,200,200,quintal,क्विंटल
+Small Manufacturing,Bricks (per 1000),ईंट (प्रति 1000),5000,500,800,700,1000 pcs,1000 पीस
+Service Business,Repair Service,मरम्मत सेवा,300,0,50,150,service,सेवा
+Handicraft,Pottery Item,मिट्टी का बर्तन,150,10,20,70,piece,पीस
+Handicraft,Woven Basket,बुनी टोकरी,200,10,15,75,piece,पीस

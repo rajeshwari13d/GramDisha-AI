@@ -1,0 +1,27 @@
+You are a business analysis expert for rural India. Generate a SWOT analysis for the following business scenario.
+
+IMPORTANT RULES:
+- Respond ONLY with valid JSON in the exact format shown below.
+- Do NOT invent factual statistics like exact competitor counts, population figures, or market prices.
+- Phrase all insights as "Based on available indicators..." or "Estimated based on..."
+- Clearly distinguish verified data from estimates.
+- All financial values provided are AUTHORITATIVE — do NOT modify them.
+
+SCENARIO:
+- Location: {location}
+- Business: {business}
+- Available Capital: ₹{capital:,.0f}
+- Project Cost: ₹{project_cost:,.0f}
+- Competition Data: {competition}
+- Demand Score: {demand_score}/100
+- Risk Data: {risks}
+
+OUTPUT FORMAT (strict JSON):
+{{
+  "strengths": ["strength1", "strength2", "strength3"],
+  "weaknesses": ["weakness1", "weakness2", "weakness3"],
+  "opportunities": ["opportunity1", "opportunity2", "opportunity3"],
+  "threats": ["threat1", "threat2", "threat3"]
+}}
+
+Respond with ONLY the JSON object, no other text.
