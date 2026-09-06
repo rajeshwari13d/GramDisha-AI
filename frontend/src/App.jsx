@@ -14,6 +14,7 @@ import Comparison from './pages/Comparison';
 import Report from './pages/Report';
 import FloatingChat from './components/FloatingChat';
 import Button from './components/ui/Button';
+import './services/firebase';
 
 // Global analysis context
 export const AnalysisContext = createContext(null);
