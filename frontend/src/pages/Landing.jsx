@@ -6,6 +6,10 @@ import {
   CheckCircle2,
   Check,
   Sparkles,
+  ShieldCheck,
+  TrendingUp,
+  Building2,
+  FileCheck,
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 
@@ -169,36 +173,44 @@ export default function Landing() {
   return (
     <div className="w-full">
 
-      {/* ── 1. HERO SECTION (Clean balanced spacing: py-16 sm:py-22) ── */}
-      <section className="w-full bg-[#FAF8F5] py-16 sm:py-22 border-b border-[#DCD3C5]/60">
-        <div className="app-container text-center space-y-6">
+      {/* ── 1. MODERN HERO SECTION ── */}
+      <section className="relative w-full bg-gradient-to-b from-emerald-50/50 via-white to-slate-50/60 py-16 sm:py-24 border-b border-slate-200/80 overflow-hidden">
+        {/* Subtle decorative background glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-tr from-emerald-400/10 to-teal-400/15 blur-3xl -z-10 pointer-events-none rounded-full" />
+
+        <div className="app-container text-center space-y-7 relative">
           {/* Official Purpose Badge */}
-          <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-white border border-[#DCD3C5] text-xs sm:text-sm font-bold text-gray-700 shadow-xs">
-            <Sparkles className="w-4 h-4 text-emerald-700 shrink-0" />
+          <div className="inline-flex items-center justify-center gap-2.5 px-4 py-2 rounded-full bg-white border border-emerald-200/80 text-xs sm:text-sm font-bold text-slate-700 shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
             <span className="leading-none">
               {isHi
-                ? 'भारत सरकार की आधिकारिक ऋण योजनाओं पर आधारित'
-                : 'Official Government of India & State Loan Schemes'}
+                ? 'भारत सरकार व राज्य आधिकारिक ऋण योजनाओं पर आधारित'
+                : 'Government of India & State Enterprise Loan Schemes'}
             </span>
           </div>
 
-          {/* Consistent Headline */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-gray-900 tracking-tight leading-tight max-w-4xl mx-auto">
+          {/* High Impact Headline */}
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-950 tracking-tight leading-[1.15] max-w-4xl mx-auto">
             {isHi ? (
               <>
                 आपके गांव के लिए सही व्यापार<br />
-                और सरकारी बैंक लोन की पूरी योजना
+                <span className="bg-gradient-to-r from-emerald-600 to-teal-700 bg-clip-text text-transparent">
+                  और 90% सरकारी बैंक लोन
+                </span> की योजना
               </>
             ) : (
               <>
-                Discover the Right Business<br />
-                and Bank Loan for Your Village
+                Discover the Right Business &<br />
+                <span className="bg-gradient-to-r from-emerald-600 to-teal-700 bg-clip-text text-transparent">
+                  Eligible 90% Bank Loan
+                </span> for Your Village
               </>
             )}
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto font-medium leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
             {isHi
               ? 'बिना किसी परेशानी के जानें कि आपके गांव में कौन सा काम सबसे ज्यादा चलेगा, बैंक से कितना लोन मिलेगा और महीने की कितनी कमाई होगी।'
               : 'Evaluate enterprise viability, calculate eligible government term loans (90%), monthly EMI, and project returns in under one minute.'}
@@ -212,24 +224,24 @@ export default function Landing() {
               variant="primary"
               icon={ArrowRight}
               iconPosition="right"
-              className="w-full sm:w-auto shadow-md"
+              className="w-full sm:w-auto shadow-md hover:shadow-lg text-base"
             >
               {isHi ? 'व्यवसाय मूल्यांकन शुरू करें' : 'Start Viability Assessment'}
             </Button>
           </div>
 
           {/* Trust points */}
-          <div className="pt-10 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs sm:text-sm font-bold text-gray-600">
+          <div className="pt-8 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs sm:text-sm font-bold text-slate-600">
             <span className="inline-flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-800 shrink-0" />
+              <ShieldCheck className="w-4.5 h-4.5 text-emerald-600 shrink-0" />
               <span>{isHi ? '100% सही बैंक गणित' : '100% Exact Bank Math'}</span>
             </span>
             <span className="inline-flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-800 shrink-0" />
+              <Building2 className="w-4.5 h-4.5 text-emerald-600 shrink-0" />
               <span>{isHi ? 'मुद्रा व नाबार्ड योजनाएं' : 'PMMY & NABARD Rules'}</span>
             </span>
             <span className="inline-flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-800 shrink-0" />
+              <FileCheck className="w-4.5 h-4.5 text-emerald-600 shrink-0" />
               <span>{isHi ? 'बैंक-स्वीकृत PDF फाइल' : 'Bank-Ready PDF Dossier'}</span>
             </span>
           </div>
@@ -237,27 +249,27 @@ export default function Landing() {
       </section>
 
       {/* ── 2. BUSINESS MODELS & LIVE ESTIMATOR ── */}
-      <section className="w-full bg-white py-16 sm:py-22 border-b border-[#DCD3C5]/60">
-        <div className="app-container space-y-8">
+      <section className="w-full bg-white py-16 sm:py-24 border-b border-slate-200/80">
+        <div className="app-container space-y-9">
           {/* Section Header */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-[#DCD3C5] pb-5">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-200 pb-6">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
                 {isHi ? 'ग्रामीण व्यवसाय मॉडल देखें' : 'Explore Rural Business Models'}
               </h2>
-              <p className="text-xs sm:text-sm text-gray-600 font-medium mt-1">
+              <p className="text-xs sm:text-sm text-slate-600 font-medium mt-1">
                 {isHi
                   ? 'नीचे दिए गए किसी भी व्यवसाय पर क्लिक करें और अनुमानित लागत, लोन व मुनाफे का हिसाब देखें।'
                   : 'Select an enterprise below to preview loan eligibility, capital requirements, and projected profit.'}
               </p>
             </div>
-            <span className="text-xs sm:text-sm font-bold text-gray-500 shrink-0">
-              {isHi ? '8 प्रमुख श्रेणियां' : '8 Common Categories'}
+            <span className="text-xs sm:text-sm font-bold text-slate-400 shrink-0 bg-slate-100 px-3 py-1.5 rounded-xl">
+              {isHi ? '8 प्रमुख श्रेणियां' : '8 Core Categories'}
             </span>
           </div>
 
-          {/* 8 Business Cards Grid (Balanced p-5 padding) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
+          {/* 8 Modern Business Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4.5 items-stretch">
             {ENTERPRISES.map((ent) => {
               const isSelected = selectedEnterprise.id === ent.id;
               return (
@@ -265,39 +277,39 @@ export default function Landing() {
                   key={ent.id}
                   type="button"
                   onClick={() => setSelectedEnterprise(ent)}
-                  className={`p-5 rounded-2xl flex flex-col justify-between text-left transition-all duration-150 cursor-pointer relative bg-white h-full ${
+                  className={`p-5 rounded-2xl flex flex-col justify-between text-left transition-all duration-200 cursor-pointer relative bg-white h-full ${
                     isSelected
-                      ? 'border-2 border-emerald-800 ring-4 ring-emerald-800/15 shadow-sm'
-                      : 'border border-[#DCD3C5] hover:border-gray-400 hover:shadow-xs'
+                      ? 'border-2 border-emerald-600 ring-4 ring-emerald-500/15 shadow-md -translate-y-0.5'
+                      : 'border border-slate-200 hover:border-slate-300 hover:shadow-sm hover:-translate-y-0.5'
                   }`}
                 >
                   <div>
-                    <div className="flex items-center justify-between w-full mb-3">
-                      {/* Standardized 44x44 Icon Tile */}
-                      <div className="w-11 h-11 rounded-xl bg-[#F4EFEB] border border-[#DCD3C5] flex items-center justify-center text-2xl shrink-0 shadow-2xs">
+                    <div className="flex items-center justify-between w-full mb-3.5">
+                      {/* Standardized Modern Icon Tile */}
+                      <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-center text-2xl shrink-0 shadow-2xs">
                         {ent.icon}
                       </div>
 
                       {/* Standardized Category Chip Tag */}
                       {isSelected ? (
-                        <span className="w-6 h-6 rounded-full bg-emerald-800 text-white flex items-center justify-center text-xs shrink-0 shadow-xs">
+                        <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs shrink-0 shadow-xs">
                           <Check className="w-3.5 h-3.5" />
                         </span>
                       ) : (
-                        <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-[#EBE3D7]/70 text-[#57534E] border border-[#DCD3C5] leading-tight">
+                        <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200 leading-tight">
                           {isHi ? ent.tag_hi : ent.tag_en}
                         </span>
                       )}
                     </div>
 
-                    <h3 className="text-base font-black text-gray-900 leading-tight">
+                    <h3 className="text-base font-black text-slate-900 leading-tight">
                       {isHi ? ent.name_hi : ent.name}
                     </h3>
                   </div>
 
                   {/* Description */}
-                  <div className="mt-3 pt-2.5 border-t border-gray-100">
-                    <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed min-h-[36px]">
+                  <div className="mt-3.5 pt-3 border-t border-slate-100">
+                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed min-h-[36px]">
                       {isHi ? ent.desc_hi : ent.desc_en}
                     </p>
                   </div>
@@ -306,19 +318,19 @@ export default function Landing() {
             })}
           </div>
 
-          {/* ── Detail Band Panel (Balanced p-6 sm:p-8 padding) ── */}
-          <div className="mt-8 sm:mt-10 p-6 sm:p-8 rounded-3xl bg-[#F4EFEB] border border-[#DCD3C5] shadow-xs space-y-6">
+          {/* ── Modern Detail Band Panel ── */}
+          <div className="mt-8 sm:mt-12 p-6 sm:p-9 rounded-3xl bg-gradient-to-br from-slate-50 to-emerald-50/30 border border-slate-200/80 shadow-sm space-y-7">
             {/* Detail Band Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#DCD3C5] pb-5">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-white border border-[#DCD3C5] flex items-center justify-center text-3xl shrink-0 shadow-xs">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 border-b border-slate-200/80 pb-6">
+              <div className="flex items-center gap-4.5">
+                <div className="w-16 h-16 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-3xl shrink-0 shadow-xs">
                   {selectedEnterprise.icon}
                 </div>
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-black text-gray-900 leading-tight">
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 leading-tight">
                     {isHi ? selectedEnterprise.name_hi : selectedEnterprise.name}
                   </h3>
-                  <p className="text-xs sm:text-sm text-gray-600 font-medium mt-0.5">
+                  <p className="text-xs sm:text-sm text-slate-600 font-medium mt-1">
                     {isHi ? selectedEnterprise.desc_hi : selectedEnterprise.desc_en}
                   </p>
                 </div>
@@ -331,63 +343,63 @@ export default function Landing() {
                 variant="primary"
                 icon={ArrowRight}
                 iconPosition="right"
-                className="shrink-0"
+                className="shrink-0 shadow-sm"
               >
                 {isHi ? 'इस व्यवसाय की पूरी जांच करें' : 'Evaluate This Business'}
               </Button>
             </div>
 
-            {/* 4 Unified Neutral Data Cards (Balanced p-5 padding) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* 4 Unified Modern Elevated Data Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4.5">
               {/* Box 1: Monthly Profit */}
-              <div className="p-5 rounded-2xl bg-white border border-[#DCD3C5] space-y-1.5 shadow-xs">
-                <span className="text-xs font-bold uppercase text-gray-500 block leading-tight">
+              <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/80 space-y-2 shadow-xs">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block leading-tight">
                   {isHi ? 'मासिक शुद्ध बचत' : 'Estimated Monthly Profit'}
                 </span>
-                <div className="text-2xl font-black text-gray-900 tabular-nums">
+                <div className="text-2xl sm:text-3xl font-black text-emerald-700 tabular-nums">
                   {isHi ? selectedEnterprise.profit_hi : selectedEnterprise.profit_en}
                 </div>
-                <span className="text-[11px] text-gray-500 font-medium block leading-tight">
+                <span className="text-[11px] text-slate-500 font-medium block leading-tight">
                   {isHi ? 'किस्त व खर्चे काटने के बाद' : 'Net in hand after EMI & costs'}
                 </span>
               </div>
 
               {/* Box 2: Govt Loan */}
-              <div className="p-5 rounded-2xl bg-white border border-[#DCD3C5] space-y-1.5 shadow-xs">
-                <span className="text-xs font-bold uppercase text-gray-500 block leading-tight">
+              <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/80 space-y-2 shadow-xs">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block leading-tight">
                   {isHi ? 'सरकारी बैंक लोन (90%)' : 'Bank Loan (90%)'}
                 </span>
-                <div className="text-2xl font-black text-gray-900 tabular-nums">
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums">
                   ₹{(selectedEnterprise.loan / 100000).toFixed(1)} {isHi ? 'लाख' : 'Lakh'}
                 </div>
-                <span className="text-[11px] text-gray-500 font-medium block truncate leading-tight">
+                <span className="text-[11px] text-slate-500 font-medium block truncate leading-tight">
                   {isHi ? selectedEnterprise.scheme_hi : selectedEnterprise.scheme_en}
                 </span>
               </div>
 
               {/* Box 3: Monthly EMI */}
-              <div className="p-5 rounded-2xl bg-white border border-[#DCD3C5] space-y-1.5 shadow-xs">
-                <span className="text-xs font-bold uppercase text-gray-500 block leading-tight">
+              <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/80 space-y-2 shadow-xs">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block leading-tight">
                   {isHi ? 'मासिक बैंक किस्त (EMI)' : 'Monthly Bank EMI'}
                 </span>
-                <div className="text-2xl font-black text-gray-900 tabular-nums">
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums">
                   ₹{selectedEnterprise.emi.toLocaleString('en-IN')}{' '}
-                  <span className="text-xs font-normal text-gray-500">/{isHi ? 'माह' : 'mo'}</span>
+                  <span className="text-xs font-normal text-slate-500">/{isHi ? 'माह' : 'mo'}</span>
                 </div>
-                <span className="text-[11px] text-gray-500 font-medium block leading-tight">
+                <span className="text-[11px] text-slate-500 font-medium block leading-tight">
                   {isHi ? '7 वर्ष @ 8.5% वार्षिक दर' : '7 Years @ 8.5% Interest'}
                 </span>
               </div>
 
               {/* Box 4: Capital Needed */}
-              <div className="p-5 rounded-2xl bg-white border border-[#DCD3C5] space-y-1.5 shadow-xs">
-                <span className="text-xs font-bold uppercase text-gray-500 block leading-tight">
+              <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/80 space-y-2 shadow-xs">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block leading-tight">
                   {isHi ? 'आपकी बचत (10%)' : 'Your Margin (10%)'}
                 </span>
-                <div className="text-2xl font-black text-gray-900 tabular-nums">
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums">
                   ₹{(selectedEnterprise.capital / 100000).toFixed(1)} {isHi ? 'लाख' : 'Lakh'}
                 </div>
-                <span className="text-[11px] text-gray-500 font-medium block leading-tight">
+                <span className="text-[11px] text-slate-500 font-medium block leading-tight">
                   {isHi ? `कुल लागत: ₹${(selectedEnterprise.cost / 100000)} लाख` : `Total Cost: ₹${(selectedEnterprise.cost / 100000)} Lakh`}
                 </span>
               </div>
@@ -396,14 +408,14 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── 3. THREE VALUE PILLARS ── */}
-      <section className="w-full bg-[#FAF8F5] py-16 sm:py-22">
-        <div className="app-container space-y-8">
-          <div className="text-center space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
+      {/* ── 3. THREE MODERN VALUE PILLARS ── */}
+      <section className="w-full bg-slate-50/70 py-16 sm:py-24">
+        <div className="app-container space-y-10">
+          <div className="text-center space-y-2.5">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
               {isHi ? 'ग्रामदिशा एआई आपकी कैसे मदद करता है?' : 'How GramDisha AI Works For You'}
             </h2>
-            <p className="text-xs sm:text-sm text-gray-600 font-medium max-w-xl mx-auto">
+            <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-xl mx-auto">
               {isHi
                 ? 'सरकारी योजनाओं और गणितीय सूत्रों के आधार पर आपके गांव के लिए सही वित्तीय फैसला लें।'
                 : 'Deterministic banking models and hyper-local intelligence combined for sound enterprise decisions.'}
@@ -411,15 +423,15 @@ export default function Landing() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="gd-card p-6 sm:p-7 space-y-3 bg-white flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-[#F4EFEB] border border-[#DCD3C5] flex items-center justify-center text-2xl shrink-0 shadow-2xs">
+            <div className="gd-card p-7 space-y-4 bg-white flex flex-col justify-between gd-card-hover">
+              <div className="space-y-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200/60 flex items-center justify-center text-2xl shrink-0 shadow-2xs">
                   📍
                 </div>
-                <h3 className="text-lg font-black text-gray-900">
+                <h3 className="text-lg font-black text-slate-900">
                   {isHi ? 'गांव की बाजार मांग' : 'Local Market Catchment'}
                 </h3>
-                <p className="text-sm text-gray-600 font-medium leading-relaxed">
+                <p className="text-sm text-slate-600 font-medium leading-relaxed">
                   {isHi
                     ? 'आपके गांव की आबादी, नजदीकी हाट-बाजार और प्रतियोगिता के अनुसार सही उत्पाद का चयन।'
                     : 'Analyses village population, catchment radius, and competitor density for realistic demand estimation.'}
@@ -427,15 +439,15 @@ export default function Landing() {
               </div>
             </div>
 
-            <div className="gd-card p-6 sm:p-7 space-y-3 bg-white flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-[#F4EFEB] border border-[#DCD3C5] flex items-center justify-center text-2xl shrink-0 shadow-2xs">
+            <div className="gd-card p-7 space-y-4 bg-white flex flex-col justify-between gd-card-hover">
+              <div className="space-y-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200/60 flex items-center justify-center text-2xl shrink-0 shadow-2xs">
                   🏛️
                 </div>
-                <h3 className="text-lg font-black text-gray-900">
+                <h3 className="text-lg font-black text-slate-900">
                   {isHi ? 'सरकारी योजना व लोन' : 'Government Loan Schemes'}
                 </h3>
-                <p className="text-sm text-gray-600 font-medium leading-relaxed">
+                <p className="text-sm text-slate-600 font-medium leading-relaxed">
                   {isHi
                     ? 'प्रधानमंत्री मुद्रा योजना, नाबार्ड, स्टैंड-अप इंडिया के तहत 90% तक बैंक लोन की पात्रता।'
                     : 'Deterministic rules for PMMY (Shishu/Kishor/Tarun), NABARD, and NRLM credit schemes.'}
@@ -443,15 +455,15 @@ export default function Landing() {
               </div>
             </div>
 
-            <div className="gd-card p-6 sm:p-7 space-y-3 bg-white flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-[#F4EFEB] border border-[#DCD3C5] flex items-center justify-center text-2xl shrink-0 shadow-2xs">
+            <div className="gd-card p-7 space-y-4 bg-white flex flex-col justify-between gd-card-hover">
+              <div className="space-y-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200/60 flex items-center justify-center text-2xl shrink-0 shadow-2xs">
                   📄
                 </div>
-                <h3 className="text-lg font-black text-gray-900">
+                <h3 className="text-lg font-black text-slate-900">
                   {isHi ? 'बैंक के लिए तैयार फाइल' : 'Bank-Ready PDF Proposal'}
                 </h3>
-                <p className="text-sm text-gray-600 font-medium leading-relaxed">
+                <p className="text-sm text-slate-600 font-medium leading-relaxed">
                   {isHi
                     ? 'बैंक मैनेजर को दिखाने के लिए 28-तिमाही किस्त तालिका व संपूर्ण डीपीआर फाइल तुरंत डाउनलोड करें।'
                     : 'Instant downloadable Detailed Project Report (DPR) with 28-quarter amortization schedule and DSCR calculations.'}
