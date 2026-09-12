@@ -20,6 +20,12 @@
   --color-negative: #B91C1C;
   --color-negative-bg: #FEE2E2;
   --color-negative-border: #FCA5A5;
+  --color-rule: #0F52BA;
+  --color-rule-bg: #EFF6FF;
+  --color-rule-border: #BFDBFE;
+  --color-advisory: #6D28D9;
+  --color-advisory-bg: #F5F3FF;
+  --color-advisory-border: #DDD6FE;
 }
 
 *, *::before, *::after {
@@ -115,6 +121,69 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   font-weight: 700;
   color: var(--color-text);
   margin-bottom: 0.5rem;
+}
+
+.gd-card-subtle {
+  background: var(--color-surface-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+}
+
+.gd-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border-radius: 12px;
+  background-color: var(--color-positive);
+  color: #ffffff;
+  padding: 0.625rem 1.25rem;
+  min-height: 44px;
+  font-size: 0.875rem;
+  line-height: 1.375;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 150ms ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  text-decoration: none;
+  user-select: none;
+}
+.gd-btn-primary:hover {
+  background-color: #144919;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+.gd-btn-primary:active {
+  background-color: #0E3612;
+  transform: translateY(0);
+}
+
+.gd-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border-radius: 12px;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  padding: 0.625rem 1.25rem;
+  min-height: 44px;
+  font-size: 0.875rem;
+  line-height: 1.375;
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: all 150ms ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  text-decoration: none;
+  user-select: none;
+}
+.gd-btn-secondary:hover {
+  background-color: var(--color-surface-subtle);
+  border-color: var(--color-border-strong);
+}
+.gd-btn-secondary:active {
+  background-color: var(--color-surface-muted);
+  transform: translateY(0);
 }
 
 @media print {
