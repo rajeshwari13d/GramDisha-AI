@@ -17,5 +17,8 @@ export const getReport = (id) => `${API_BASE}/api/report/${id}`;
 export const getLocations = () => api.get('/api/locations');
 export const getCategories = () => api.get('/api/categories');
 export const healthCheck = () => api.get('/api/health');
+export const submitSurvey = (data) => api.post('/api/vendor-survey', data);
+export const getSurveys = () => api.get('/api/vendor-surveys');
 
 export default api;
+

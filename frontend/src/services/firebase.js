@@ -42,12 +42,18 @@ export const trackEvent = (eventName, params = {}) => {
   }
 };
 
+import { submitSurvey } from "./api";
+
 /**
- * Save Local Vendor Ground Survey Data to Firestore.
- * Used to collect field benchmark data from rural shopkeepers/artisans/farmers
- * to calibrate our AI viability models with actual local reality.
+ * Save Local Vendor Ground Survey Data.
+ * Saves to both Cloud Firestore and Backend Ground Dataset,
+ * with automatic fallback to localStorage.
  */
 export const submitVendorSurvey = async (surveyData) => {
+  let firestoreId = null;
+  let backendId = null;
+
+  // 1. Try Firebase Firestore
   try {
     const docRef = await addDoc(collection(db, "vendor_surveys"), {
       ...surveyData,
@@ -56,24 +62,43 @@ export const submitVendorSurvey = async (surveyData) => {
       platform: "GramDisha-AI-Web",
       version: "SIH-2026",
     });
+    firestoreId = docRef.id;
 
     trackEvent("vendor_survey_submitted", {
-      business_type: surveyData.business_type || "unspecified",
+      business_type: surveyData.category || "unspecified",
       state: surveyData.state || "unspecified",
     });
-
-    return { success: true, id: docRef.id };
-  } catch (error) {
-    console.warn("Firebase Firestore survey save warning (using local fallback):", error);
-    // Graceful offline/fallback storage so user experience is never blocked
-    try {
-      const existing = JSON.parse(localStorage.getItem("gramdisha_offline_surveys") || "[]");
-      existing.push({ ...surveyData, submitted_at: new Date().toISOString(), offline: true });
-      localStorage.setItem("gramdisha_offline_surveys", JSON.stringify(existing));
-    } catch (_) {}
-
-    return { success: true, fallback: true };
+  } catch (fbErr) {
+    console.warn("Firestore survey direct write note (falling back to backend & offline):", fbErr?.message || fbErr);
   }
+
+  // 2. Sync to Backend Dataset
+  try {
+    const res = await submitSurvey(surveyData);
+    if (res.data?.success) {
+      backendId = res.data.id;
+    }
+  } catch (apiErr) {
+    console.debug("Backend survey sync note:", apiErr?.message || apiErr);
+  }
+
+  // 3. Local offline backup
+  try {
+    const existing = JSON.parse(localStorage.getItem("gramdisha_offline_surveys") || "[]");
+    existing.push({
+      ...surveyData,
+      firestoreId,
+      backendId,
+      submitted_at: new Date().toISOString(),
+    });
+    localStorage.setItem("gramdisha_offline_surveys", JSON.stringify(existing));
+  } catch (_) {}
+
+  return {
+    success: true,
+    firestoreId,
+    backendId,
+  };
 };
 
 /**
@@ -99,3 +124,4 @@ export const submitAppraisalFeedback = async (feedbackData) => {
 };
 
 export default app;
+

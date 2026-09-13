@@ -525,10 +525,57 @@ async def get_report(analysis_id: str):
         return error_response("REPORT_GENERATION_ERROR", f"PDF generation failed: {str(e)}", 500)
 
 
-# ─── GET locations ───────────────────────────────────────────────
+# ─── POST /api/vendor-survey (GROUND DATA COLLECTION) ───────────
 
-@app.get("/api/locations")
-async def get_locations():
-    data_path = Path(__file__).resolve().parent.parent / "data" / "locations.json"
-    with open(data_path, "r", encoding="utf-8") as f:
-        return {"success": True, "locations": json.load(f)}
+@app.post("/api/vendor-survey")
+async def submit_vendor_survey(survey: dict):
+    try:
+        surveys_file = Path(__file__).resolve().parent.parent / "data" / "vendor_surveys.json"
+        surveys = []
+        if surveys_file.exists():
+            try:
+                with open(surveys_file, "r", encoding="utf-8") as f:
+                    surveys = json.load(f)
+            except Exception:
+                surveys = []
+
+        survey_record = {
+            "id": f"VS-{uuid.uuid4().hex[:8].upper()}",
+            "received_at": datetime.utcnow().isoformat(),
+            **survey,
+        }
+        surveys.append(survey_record)
+
+        with open(surveys_file, "w", encoding="utf-8") as f:
+            json.dump(surveys, f, indent=2, ensure_ascii=False)
+
+        return {
+            "success": True,
+            "id": survey_record["id"],
+            "total_surveys": len(surveys),
+            "message": "Vendor survey saved successfully.",
+        }
+    except Exception as e:
+        logger.error(f"Failed to save vendor survey: {e}", exc_info=True)
+        return error_response("SURVEY_SAVE_ERROR", f"Could not save survey: {str(e)}", 500)
+
+
+# ─── GET /api/vendor-surveys ─────────────────────────────────────
+
+@app.get("/api/vendor-surveys")
+async def get_vendor_surveys():
+    surveys_file = Path(__file__).resolve().parent.parent / "data" / "vendor_surveys.json"
+    surveys = []
+    if surveys_file.exists():
+        try:
+            with open(surveys_file, "r", encoding="utf-8") as f:
+                surveys = json.load(f)
+        except Exception:
+            surveys = []
+
+    return {
+        "success": True,
+        "count": len(surveys),
+        "surveys": surveys,
+    }
+
