@@ -13,14 +13,313 @@
               "name_hi": "शिरपूर",
               "villages": [
                 { "name": "Demo Village", "name_hi": "डेमो गांव" },
-                { "name": "Shirpur Town", "name_hi": "शिरपूर शहर" }
+                { "name": "Shirpur Rural", "name_hi": "शिरपूर ग्रामीण" },
+                { "name": "Holnanthe", "name_hi": "होलनांथे" },
+                { "name": "Boradi", "name_hi": "बोराडी" }
               ]
             },
             {
               "name": "Dhule City",
               "name_hi": "धुळे शहर",
               "villages": [
-                { "name": "Dhule Urban", "name_hi": "धुळे शहरी" }
+                { "name": "Dhule Rural", "name_hi": "धुळे ग्रामीण" },
+                { "name": "Songir", "name_hi": "सोंगीर" },
+                { "name": "Kusumba", "name_hi": "कुसुम्बा" }
+              ]
+            },
+            {
+              "name": "Sakri",
+              "name_hi": "साक्री",
+              "villages": [
+                { "name": "Pimpalner", "name_hi": "पिंपळनेर" },
+                { "name": "Dahiwel", "name_hi": "दहिवाड़" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Nashik",
+          "name_hi": "नाशिक",
+          "blocks": [
+            {
+              "name": "Niphad",
+              "name_hi": "निफाड",
+              "villages": [
+                { "name": "Pimpalgaon Baswant", "name_hi": "पिंपलगांव बसवंत" },
+                { "name": "Lasalgaon", "name_hi": "लासलगांव" },
+                { "name": "Ozar", "name_hi": "ओझर" }
+              ]
+            },
+            {
+              "name": "Sinnar",
+              "name_hi": "सिन्नर",
+              "villages": [
+                { "name": "Wavi", "name_hi": "वावी" },
+                { "name": "Pangri", "name_hi": "पांगरी" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Pune",
+          "name_hi": "पुणे",
+          "blocks": [
+            {
+              "name": "Baramati",
+              "name_hi": "बारामती",
+              "villages": [
+                { "name": "Malegaon Bk", "name_hi": "मालेगांव बुद्रुक" },
+                { "name": "Songaon", "name_hi": "सोनगांव" }
+              ]
+            },
+            {
+              "name": "Junnar",
+              "name_hi": "जुन्नर",
+              "villages": [
+                { "name": "Otur", "name_hi": "ओतूर" },
+                { "name": "Narayangaon", "name_hi": "नारायणगांव" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Uttar Pradesh",
+      "name_hi": "उत्तर प्रदेश",
+      "districts": [
+        {
+          "name": "Varanasi",
+          "name_hi": "वाराणसी",
+          "blocks": [
+            {
+              "name": "Kashi Rural",
+              "name_hi": "काशी ग्रामीण",
+              "villages": [
+                { "name": "Shivpur Gram", "name_hi": "शिवपुर ग्राम" },
+                { "name": "Chiraigaon", "name_hi": "चिरईगांव" },
+                { "name": "Harhua", "name_hi": "हरहुआ" }
+              ]
+            },
+            {
+              "name": "Pindra",
+              "name_hi": "पिंडरा",
+              "villages": [
+                { "name": "Phulpur Gram", "name_hi": "फूलपुर ग्राम" },
+                { "name": "Sindhora", "name_hi": "सिंधोरा" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Gorakhpur",
+          "name_hi": "गोरखपुर",
+          "blocks": [
+            {
+              "name": "Sahjanwa",
+              "name_hi": "सहजनवा",
+              "villages": [
+                { "name": "Ghanshyampur", "name_hi": "घनश्यामपुर" },
+                { "name": "Bhadohi Gram", "name_hi": "भदोही ग्राम" }
+              ]
+            },
+            {
+              "name": "Pipraich",
+              "name_hi": "पिपराइच",
+              "villages": [
+                { "name": "Bargadwa", "name_hi": "बरगदवा" },
+                { "name": "Mahuawa", "name_hi": "महुआवा" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Lucknow",
+          "name_hi": "लखनऊ",
+          "blocks": [
+            {
+              "name": "Bakshi Ka Talab",
+              "name_hi": "बख्शी का तालाब",
+              "villages": [
+                { "name": "Kathwara", "name_hi": "कठवारा" },
+                { "name": "Bhaisamau", "name_hi": "भैसामऊ" }
+              ]
+            },
+            {
+              "name": "Malihabad",
+              "name_hi": "मलिहाबाद",
+              "villages": [
+                { "name": "Kasmandi Kalan", "name_hi": "कसमंडी कलां" },
+                { "name": "Saspan", "name_hi": "ससपन" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Madhya Pradesh",
+      "name_hi": "मध्य प्रदेश",
+      "districts": [
+        {
+          "name": "Indore",
+          "name_hi": "इंदौर",
+          "blocks": [
+            {
+              "name": "Sanwer",
+              "name_hi": "सांवेर",
+              "villages": [
+                { "name": "Sanwer Gram", "name_hi": "सांवेर ग्राम" },
+                { "name": "Chandrawatiganj", "name_hi": "चंद्रावतीगंज" },
+                { "name": "Dharmat", "name_hi": "धरमत" }
+              ]
+            },
+            {
+              "name": "Depalpur",
+              "name_hi": "देपालपुर",
+              "villages": [
+                { "name": "Betma", "name_hi": "बेतमा" },
+                { "name": "Gautampura", "name_hi": "गौतमपुरा" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Ujjain",
+          "name_hi": "उज्जैन",
+          "blocks": [
+            {
+              "name": "Nagda",
+              "name_hi": "नागदा",
+              "villages": [
+                { "name": "Runkheda", "name_hi": "रूनखेड़ा" },
+                { "name": "Padlya", "name_hi": "पाड़ल्या" }
+              ]
+            },
+            {
+              "name": "Mahidpur",
+              "name_hi": "महिदपुर",
+              "villages": [
+                { "name": "Jharda", "name_hi": "झारड़ा" },
+                { "name": "Khedakhajuria", "name_hi": "खेड़ाखजूरिया" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bihar",
+      "name_hi": "बिहार",
+      "districts": [
+        {
+          "name": "Patna",
+          "name_hi": "पटना",
+          "blocks": [
+            {
+              "name": "Danapur",
+              "name_hi": "दानापुर",
+              "villages": [
+                { "name": "Khagaul Gram", "name_hi": "खगौल ग्राम" },
+                { "name": "Maner Rural", "name_hi": "मनेर ग्रामीण" }
+              ]
+            },
+            {
+              "name": "Fatuha",
+              "name_hi": "फतुहा",
+              "villages": [
+                { "name": "Daniayawan", "name_hi": "दनियावां" },
+                { "name": "Sampatchak", "name_hi": "संपतचक" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Muzaffarpur",
+          "name_hi": "मुजफ्फरपुर",
+          "blocks": [
+            {
+              "name": "Kanti",
+              "name_hi": "कांटी",
+              "villages": [
+                { "name": "Damodarpur", "name_hi": "दामोदरपुर" },
+                { "name": "Kolhua", "name_hi": "कोल्हुआ" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Rajasthan",
+      "name_hi": "राजस्थान",
+      "districts": [
+        {
+          "name": "Jaipur",
+          "name_hi": "जयपुर",
+          "blocks": [
+            {
+              "name": "Chaksu",
+              "name_hi": "चाकसू",
+              "villages": [
+                { "name": "Kothun", "name_hi": "कोथून" },
+                { "name": "Thali", "name_hi": "थाली" }
+              ]
+            },
+            {
+              "name": "Sanganer Rural",
+              "name_hi": "सांगानेर ग्रामीण",
+              "villages": [
+                { "name": "Bagru Gram", "name_hi": "बगरू ग्राम" },
+                { "name": "Muhana", "name_hi": "मुहाना" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Udaipur",
+          "name_hi": "उदयपुर",
+          "blocks": [
+            {
+              "name": "Mavli",
+              "name_hi": "मावली",
+              "villages": [
+                { "name": "Fatehnagar", "name_hi": "फतेहनगर" },
+                { "name": "Sanwar", "name_hi": "सनवाड़" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Gujarat",
+      "name_hi": "गुजरात",
+      "districts": [
+        {
+          "name": "Anand",
+          "name_hi": "आनंद",
+          "blocks": [
+            {
+              "name": "Petlad",
+              "name_hi": "पेटलाद",
+              "villages": [
+                { "name": "Boriavi", "name_hi": "बोरियावी" },
+                { "name": "Vaso Gram", "name_hi": "वासो ग्राम" }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Surat Rural",
+          "name_hi": "सूरत ग्रामीण",
+          "blocks": [
+            {
+              "name": "Bardoli",
+              "name_hi": "बारडोली",
+              "villages": [
+                { "name": "Sarbhon", "name_hi": "सरभोन" },
+                { "name": "Babla", "name_hi": "बाबला" }
               ]
             }
           ]
@@ -28,6 +327,6 @@
       ]
     }
   ],
-  "data_status": "prototype",
-  "source": "Prototype demonstration dataset"
+  "data_status": "production_benchmark",
+  "source": "GramDisha National Rural Clusters Matrix (SIH 2026)"
 }

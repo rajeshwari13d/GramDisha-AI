@@ -23,6 +23,9 @@ import {
   Sparkles,
   Layers,
   ShieldCheck,
+  User,
+  CheckCircle2,
+  FileText,
 } from 'lucide-react';
 import { AnalysisContext } from '../App';
 import { getLocations } from '../services/api';
@@ -45,22 +48,22 @@ const DEFAULT_LOCATIONS = {
       }],
     },
     {
-      name: 'Madhya Pradesh', name_hi: 'मध्य प्रदेश',
-      districts: [{
-        name: 'Indore', name_hi: 'इंदौर',
-        blocks: [{
-          name: 'Sanwer', name_hi: 'सांवेर',
-          villages: [{ name: 'Sanwer Gram', name_hi: 'सांवेर ग्राम' }],
-        }],
-      }],
-    },
-    {
       name: 'Uttar Pradesh', name_hi: 'उत्तर प्रदेश',
       districts: [{
         name: 'Varanasi', name_hi: 'वाराणसी',
         blocks: [{
           name: 'Kashi Rural', name_hi: 'काशी ग्रामीण',
           villages: [{ name: 'Shivpur Gram', name_hi: 'शिवपुर ग्राम' }],
+        }],
+      }],
+    },
+    {
+      name: 'Madhya Pradesh', name_hi: 'मध्य प्रदेश',
+      districts: [{
+        name: 'Indore', name_hi: 'इंदौर',
+        blocks: [{
+          name: 'Sanwer', name_hi: 'सांवेर',
+          villages: [{ name: 'Sanwer Gram', name_hi: 'सांवेर ग्राम' }],
         }],
       }],
     },
@@ -103,6 +106,7 @@ export default function Assessment() {
   const routerState = location.state || {};
 
   const [locations, setLocations] = useState(DEFAULT_LOCATIONS);
+  const [viewMode, setViewMode] = useState('wizard'); // 'wizard' | 'single'
   const [step, setStep] = useState(1);
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedBusiness, setSelectedBusiness] = useState(routerState.presetBusiness || 'dairy');
@@ -111,6 +115,9 @@ export default function Assessment() {
   const [selectedBlock, setSelectedBlock] = useState('Shirpur');
   const [selectedVillage, setSelectedVillage] = useState('Demo Village');
   const [capital, setCapital] = useState(routerState.presetCapital ? Number(routerState.presetCapital) : 100000);
+  const [applicantName, setApplicantName] = useState('');
+  const [experienceYears, setExperienceYears] = useState('1-3');
+  const [premisesStatus, setPremisesStatus] = useState('owned');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -120,7 +127,7 @@ export default function Assessment() {
     }).catch(() => {});
   }, []);
 
-  // Cascading
+  // Cascading Location Logic
   const states = locations.states || [];
   const stateObj = states.find((s) => s.name === selectedState) || states[0];
   const districts = stateObj?.districts || [];
@@ -163,13 +170,16 @@ export default function Assessment() {
     }
     setError('');
     const payload = {
-      state: selectedState,
-      district: selectedDistrict,
-      block: selectedBlock,
-      village: selectedVillage,
+      state: selectedState || 'Maharashtra',
+      district: selectedDistrict || 'Dhule',
+      block: selectedBlock || 'Shirpur',
+      village: selectedVillage || 'Demo Village',
       capital: capNum,
       business: selectedBusiness,
       business_category: selectedBusiness,
+      applicant_name: applicantName || undefined,
+      experience_years: experienceYears,
+      premises_status: premisesStatus,
     };
     setFormData(payload);
     navigate('/processing', { state: payload });
@@ -201,61 +211,111 @@ export default function Assessment() {
     : ALL_BUSINESSES.filter((b) => b.category === activeCategory);
 
   return (
-    <div className="app-container py-8 sm:py-10 space-y-7 max-w-4xl">
+    <form onSubmit={handleSubmit} className="app-container py-8 sm:py-10 space-y-7 max-w-4xl">
       {/* Header */}
-      <div className="space-y-1.5 border-b border-slate-200 pb-4">
-        <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-700">
-          <Building2 className="w-3.5 h-3.5" />
-          <span>{isHi ? 'चरणबद्ध क्रेडिट मूल्यांकन' : 'Structured Credit Appraisal Wizard'}</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-700">
+            <Building2 className="w-3.5 h-3.5" />
+            <span>{isHi ? 'आधिकारिक क्रेडिट मूल्यांकन फॉर्म' : 'Credit Appraisal Form'}</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            {isHi ? 'ग्रामीण व्यवसाय व्यवहार्यता मूल्यांकन' : 'Enterprise Feasibility Appraisal'}
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500">
+            {isHi
+              ? 'व्यवसाय मॉडल, स्थान व पूंजी दर्ज कर बैंक-अनुरूप व्यवहार्यता रिपोर्ट तैयार करें।'
+              : 'Configure your trade model, catchment boundaries, and capital to generate DPR dossier.'}
+          </p>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-          {isHi ? 'ग्रामीण व्यवसाय व्यवहार्यता मूल्यांकन' : 'Enterprise Feasibility Appraisal'}
-        </h1>
-        <p className="text-xs sm:text-sm text-slate-500">
-          {isHi
-            ? '3 सरल चरणों में अपने व्यवसाय मॉडल, स्थान व पूंजी का विवरण दर्ज करें।'
-            : 'Complete 3 guided steps to generate your bank-compliant credit appraisal dossier.'}
-        </p>
+
+        {/* View Mode Toggle: Guided Steps vs All-in-One Form */}
+        <div className="inline-flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200 select-none self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={() => setViewMode('wizard')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              viewMode === 'wizard'
+                ? 'bg-white text-slate-900 shadow-xs font-bold'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            {isHi ? 'चरणबद्ध (Guided)' : 'Guided Steps'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('single')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              viewMode === 'single'
+                ? 'bg-white text-slate-900 shadow-xs font-bold'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            {isHi ? 'पूर्ण एकल फॉर्म' : 'All-In-One Form'}
+          </button>
+        </div>
       </div>
 
-      {/* Stepper Progress Bar */}
-      <div className="grid grid-cols-3 gap-3 select-none">
-        {[
-          { num: 1, title_hi: '1. व्यवसाय चयन', title_en: '1. Trade Model' },
-          { num: 2, title_hi: '2. क्षेत्रीय स्थान', title_en: '2. Location' },
-          { num: 3, title_hi: '3. पूंजी व ऋण', title_en: '3. Capital & Loan' },
-        ].map((s) => {
-          const isActive = step === s.num;
-          const isCompleted = step > s.num;
-          return (
-            <button
-              key={s.num}
-              type="button"
-              onClick={() => setStep(s.num)}
-              className={`p-3 rounded-xl flex items-center gap-2.5 text-left transition-all cursor-pointer border ${
-                isActive
-                  ? 'bg-white border-emerald-700 ring-2 ring-emerald-700/15 shadow-xs'
-                  : isCompleted
-                  ? 'bg-emerald-50/60 border-emerald-200 text-emerald-800'
-                  : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
-              }`}
-            >
-              <span
-                className={`w-6 h-6 rounded-lg font-bold flex items-center justify-center text-xs shrink-0 ${
-                  isActive || isCompleted
-                    ? 'bg-emerald-700 text-white'
-                    : 'bg-slate-100 text-slate-500'
+      {/* Preset Banner if coming from Landing */}
+      {routerState.presetBusiness && (
+        <div className="p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-200 flex items-center justify-between text-xs text-emerald-800">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-emerald-700 shrink-0" />
+            <span>
+              {isHi ? 'सिमुलेटर से लोड किया गया मॉडल:' : 'Configured from Calculator:'}{' '}
+              <strong className="font-bold text-emerald-900">{businessObj.name}</strong> •{' '}
+              <strong>₹{currentCapitalNum.toLocaleString('en-IN')}</strong>
+            </span>
+          </div>
+          <button
+            type="submit"
+            className="px-3 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold transition-colors cursor-pointer"
+          >
+            {isHi ? 'तुरंत मूल्यांकन करें' : 'Submit Directly'}
+          </button>
+        </div>
+      )}
+
+      {/* Stepper (Wizard Mode Only) */}
+      {viewMode === 'wizard' && (
+        <div className="grid grid-cols-3 gap-3 select-none">
+          {[
+            { num: 1, title_hi: '1. व्यवसाय मॉडल', title_en: '1. Trade Model' },
+            { num: 2, title_hi: '2. क्षेत्रीय स्थान', title_en: '2. Location' },
+            { num: 3, title_hi: '3. पूंजी व ऋण', title_en: '3. Capital & Loan' },
+          ].map((s) => {
+            const isActive = step === s.num;
+            const isCompleted = step > s.num;
+            return (
+              <button
+                key={s.num}
+                type="button"
+                onClick={() => setStep(s.num)}
+                className={`p-3 rounded-xl flex items-center gap-2.5 text-left transition-all cursor-pointer border ${
+                  isActive
+                    ? 'bg-white border-emerald-700 ring-2 ring-emerald-700/15 shadow-xs'
+                    : isCompleted
+                    ? 'bg-emerald-50/60 border-emerald-200 text-emerald-800'
+                    : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
                 }`}
               >
-                {isCompleted ? <Check className="w-3.5 h-3.5" /> : s.num}
-              </span>
-              <span className={`text-xs sm:text-sm font-semibold truncate ${isActive ? 'text-slate-900 font-bold' : 'text-slate-600'}`}>
-                {isHi ? s.title_hi : s.title_en}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+                <span
+                  className={`w-6 h-6 rounded-lg font-bold flex items-center justify-center text-xs shrink-0 ${
+                    isActive || isCompleted
+                      ? 'bg-emerald-700 text-white'
+                      : 'bg-slate-100 text-slate-500'
+                  }`}
+                >
+                  {isCompleted ? <Check className="w-3.5 h-3.5" /> : s.num}
+                </span>
+                <span className={`text-xs sm:text-sm font-semibold truncate ${isActive ? 'text-slate-900 font-bold' : 'text-slate-600'}`}>
+                  {isHi ? s.title_hi : s.title_en}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {error && (
         <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 font-semibold text-xs sm:text-sm flex items-center gap-2.5">
@@ -264,13 +324,14 @@ export default function Assessment() {
         </div>
       )}
 
-      {/* ══════ STEP 1: ENTERPRISE MODEL PICKER ══════ */}
-      {step === 1 && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 space-y-6 shadow-sm">
+      {/* ══════ SECTION 1: ENTERPRISE MODEL PICKER ══════ */}
+      {(viewMode === 'single' || step === 1) && (
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 space-y-5 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
             <div>
-              <h2 className="text-lg sm:text-xl font-bold text-slate-900">
-                {isHi ? '1. प्रस्तावित ग्रामीण व्यवसाय का चयन करें' : '1. Select Proposed Enterprise Model'}
+              <h2 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+                <Store className="w-5 h-5 text-emerald-700" />
+                <span>{isHi ? '1. प्रस्तावित ग्रामीण व्यवसाय का चयन करें' : '1. Select Proposed Enterprise Model'}</span>
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
                 {isHi ? 'मानकीकृत 8 ग्रामीण व्यवसाय श्रेणियों में से चुनें:' : 'Select one of the 8 curated rural enterprise models below:'}
@@ -344,37 +405,42 @@ export default function Assessment() {
             })}
           </div>
 
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100">
-            <span className="text-xs font-semibold text-slate-600">
-              {isHi ? `चयनित उद्यम: ${businessObj?.name_hi}` : `Selected Trade: ${businessObj?.name}`}
-            </span>
-            <Button
-              onClick={() => setStep(2)}
-              size="md"
-              variant="primary"
-              icon={ArrowRight}
-              iconPosition="right"
-              className="w-full sm:w-auto font-bold"
-            >
-              {isHi ? 'अगला: स्थान निर्धारण' : 'Proceed to Location'}
-            </Button>
-          </div>
+          {viewMode === 'wizard' && (
+            <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100">
+              <span className="text-xs font-semibold text-slate-600">
+                {isHi ? `चयनित उद्यम: ${businessObj?.name_hi}` : `Selected Trade: ${businessObj?.name}`}
+              </span>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <Button
+                  onClick={() => setStep(2)}
+                  size="md"
+                  variant="primary"
+                  icon={ArrowRight}
+                  iconPosition="right"
+                  className="w-full sm:w-auto font-bold"
+                >
+                  {isHi ? 'अगला: स्थान निर्धारण' : 'Proceed to Location'}
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
-      {/* ══════ STEP 2: LOCATION & CATCHMENT SELECTOR ══════ */}
-      {step === 2 && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 space-y-6 shadow-sm">
+      {/* ══════ SECTION 2: LOCATION & CATCHMENT SELECTOR ══════ */}
+      {(viewMode === 'single' || step === 2) && (
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 space-y-5 shadow-xs">
           <div className="border-b border-slate-100 pb-3">
-            <h2 className="text-lg sm:text-xl font-bold text-slate-900">
-              {isHi ? '2. क्षेत्रीय कार्यक्षेत्र व गांव का चयन' : '2. Define Enterprise Catchment Area'}
+            <h2 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-emerald-700" />
+              <span>{isHi ? '2. क्षेत्रीय कार्यक्षेत्र व स्थान का चयन' : '2. Define Enterprise Catchment Area'}</span>
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
               {isHi ? 'प्रशासनिक क्षेत्राधिकार चुनें ताकि स्थानीय जनसंख्या व मांग का सटीक विश्लेषण हो सके:' : 'Select administrative boundaries to model population density and local demand:'}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-xl bg-slate-50 border border-slate-200/80">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-5 rounded-xl bg-slate-50 border border-slate-200/80">
             <div>
               <label className="doc-label flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-emerald-700" />
@@ -414,7 +480,7 @@ export default function Assessment() {
             <div>
               <label className="doc-label flex items-center gap-1.5">
                 <Compass className="w-3.5 h-3.5 text-emerald-700" />
-                <span>{isHi ? 'तहसील / ब्लॉक (Taluka / Block)' : 'Block / Taluka'}</span>
+                <span>{isHi ? 'तहसील / ब्लॉक' : 'Block / Taluka'}</span>
               </label>
               <select
                 value={selectedBlock}
@@ -432,7 +498,7 @@ export default function Assessment() {
             <div>
               <label className="doc-label flex items-center gap-1.5">
                 <Building2 className="w-3.5 h-3.5 text-emerald-700" />
-                <span>{isHi ? 'गांव / कस्बा (Village)' : 'Village / Town'}</span>
+                <span>{isHi ? 'गांव / कस्बा' : 'Village / Town'}</span>
               </label>
               <select
                 value={selectedVillage}
@@ -448,54 +514,105 @@ export default function Assessment() {
             </div>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs font-semibold text-emerald-800">
+          <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs font-semibold text-emerald-800">
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-emerald-700 shrink-0" />
               <span>{isHi ? 'सक्रिय सेवा दायरा:' : 'Selected Catchment:'}</span>
-              <span className="font-bold text-emerald-900">{selectedVillage}, {selectedBlock}, {selectedDistrict}</span>
+              <span className="font-bold text-emerald-900">{selectedVillage}, {selectedBlock}, {selectedDistrict} ({selectedState})</span>
             </div>
-            <span className="text-[11px] font-bold bg-white px-2.5 py-0.5 rounded-full border border-emerald-200">
+            <span className="text-[11px] font-bold bg-white px-2.5 py-0.5 rounded-full border border-emerald-200 shrink-0">
               {isHi ? '5-15 किमी सेवा परिधि' : '5–15 km Radius'}
             </span>
           </div>
 
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100">
-            <Button
-              onClick={() => setStep(1)}
-              size="md"
-              variant="secondary"
-              icon={ArrowLeft}
-              iconPosition="left"
-              className="w-full sm:w-auto"
-            >
-              {isHi ? 'पिछला' : 'Back'}
-            </Button>
-            <Button
-              onClick={() => setStep(3)}
-              size="md"
-              variant="primary"
-              icon={ArrowRight}
-              iconPosition="right"
-              className="w-full sm:w-auto font-bold"
-            >
-              {isHi ? 'अगला: पूंजी संरचना' : 'Proceed to Capital'}
-            </Button>
-          </div>
+          {viewMode === 'wizard' && (
+            <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100">
+              <Button
+                onClick={() => setStep(1)}
+                size="md"
+                variant="secondary"
+                icon={ArrowLeft}
+                iconPosition="left"
+                className="w-full sm:w-auto"
+              >
+                {isHi ? 'पिछला' : 'Back'}
+              </Button>
+              <Button
+                onClick={() => setStep(3)}
+                size="md"
+                variant="primary"
+                icon={ArrowRight}
+                iconPosition="right"
+                className="w-full sm:w-auto font-bold"
+              >
+                {isHi ? 'अगला: पूंजी संरचना' : 'Proceed to Capital'}
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
-      {/* ══════ STEP 3: CAPITAL & 10:90 LOAN SIMULATOR ══════ */}
-      {step === 3 && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 space-y-6 shadow-sm">
+      {/* ══════ SECTION 3: CAPITAL, APPLICANT & 10:90 LOAN ══════ */}
+      {(viewMode === 'single' || step === 3) && (
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 space-y-6 shadow-xs">
           <div className="border-b border-slate-100 pb-3">
-            <h2 className="text-lg sm:text-xl font-bold text-slate-900">
-              {isHi ? '3. प्रवर्तक अंशदान व पूंजी संरचना (10:90 अनुपात)' : '3. Promoter Margin & Capital Structure'}
+            <h2 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+              <Coins className="w-5 h-5 text-emerald-700" />
+              <span>{isHi ? '3. प्रवर्तक पूंजी एवं आवेदक विवरण' : '3. Promoter Capital & Applicant Details'}</span>
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
               {isHi
                 ? 'सरकारी ऋण नीतियों के अनुसार 10% राशि स्वयं की पूंजी होती है, तथा 90% राशि सावधि बैंक ऋण द्वारा वित्तपोषित होती है:'
                 : 'Under standard RBI schemes, promoter contributes 10% equity, while 90% is financed via term loan:'}
             </p>
+          </div>
+
+          {/* Optional Applicant Details */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+                <User className="w-3.5 h-3.5 text-slate-500" />
+                <span>{isHi ? 'आवेदक / उद्यमी का नाम' : 'Applicant / Promoter Name'}</span>
+              </label>
+              <input
+                type="text"
+                placeholder={isHi ? 'उदा. राजेश पाटिल' : 'e.g., Rajesh Patil'}
+                value={applicantName}
+                onChange={(e) => setApplicantName(e.target.value)}
+                className="w-full text-xs rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-hidden font-medium"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                {isHi ? 'व्यापारिक अनुभव' : 'Business Experience'}
+              </label>
+              <select
+                value={experienceYears}
+                onChange={(e) => setExperienceYears(e.target.value)}
+                className="w-full text-xs rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-hidden font-medium"
+              >
+                <option value="<1">{isHi ? '1 वर्ष से कम (नया उद्यमी)' : '< 1 Year (New Entrepreneur)'}</option>
+                <option value="1-3">{isHi ? '1 से 3 वर्ष' : '1 - 3 Years'}</option>
+                <option value="3-5">{isHi ? '3 से 5 वर्ष' : '3 - 5 Years'}</option>
+                <option value="5+">{isHi ? '5+ वर्ष (अनुभवी)' : '5+ Years (Experienced)'}</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                {isHi ? 'दुकान / भूमि स्वामित्व' : 'Premises Ownership'}
+              </label>
+              <select
+                value={premisesStatus}
+                onChange={(e) => setPremisesStatus(e.target.value)}
+                className="w-full text-xs rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-hidden font-medium"
+              >
+                <option value="owned">{isHi ? 'स्वयं की भूमि / दुकान (Owned)' : 'Self-Owned Property'}</option>
+                <option value="rented">{isHi ? 'किराए पर (Rented / Leased)' : 'Rented / Leasehold'}</option>
+                <option value="gram_panchayat">{isHi ? 'ग्राम पंचायत / साझा भूमि' : 'Gram Panchayat Shared'}</option>
+              </select>
+            </div>
           </div>
 
           {/* Interactive Range Slider */}
@@ -589,33 +706,54 @@ export default function Assessment() {
               </span>
             </div>
           </div>
+        </div>
+      )}
 
-          {/* Step 3 Actions */}
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100">
+      {/* ══════ PERSISTENT COMPLETE FORM SUBMISSION ACTION BAR ══════ */}
+      <div className="bg-slate-900 text-white rounded-2xl p-5 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-lg">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[11px] font-bold">
+              {matchedScheme}
+            </span>
+            <span className="text-xs text-slate-300">
+              {selectedVillage}, {selectedDistrict}
+            </span>
+          </div>
+          <div className="text-sm font-bold text-white flex items-center gap-2">
+            <span>{businessObj.name}</span>
+            <span className="text-slate-400">•</span>
+            <span className="text-emerald-400">₹{currentCapitalNum.toLocaleString('en-IN')} Margin</span>
+            <span className="text-slate-400">→</span>
+            <span className="text-emerald-300 font-mono">₹{projectedLoan.toLocaleString('en-IN')} Loan</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          {viewMode === 'wizard' && step > 1 && (
             <Button
-              onClick={() => setStep(2)}
+              type="button"
+              onClick={() => setStep((s) => Math.max(1, s - 1))}
               size="md"
               variant="secondary"
               icon={ArrowLeft}
               iconPosition="left"
-              className="w-full sm:w-auto"
+              className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 cursor-pointer"
             >
               {isHi ? 'पिछला' : 'Back'}
             </Button>
+          )}
 
-            <Button
-              onClick={handleSubmit}
-              size="lg"
-              variant="primary"
-              icon={ArrowRight}
-              iconPosition="right"
-              className="w-full sm:w-auto font-bold shadow-sm"
-            >
-              {isHi ? 'व्यवसाय मूल्यांकन पूर्ण करें' : 'Generate Full Appraisal'}
-            </Button>
-          </div>
+          <button
+            type="submit"
+            className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl shadow-md transition-all cursor-pointer"
+          >
+            <span>{isHi ? 'व्यवसाय मूल्यांकन पूर्ण करें' : 'Generate Full Appraisal'}</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
         </div>
-      )}
-    </div>
+      </div>
+    </form>
   );
 }
+
