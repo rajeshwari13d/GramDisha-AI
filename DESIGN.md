@@ -1,50 +1,67 @@
-# 🌾 GramDisha AI — Design System Specification & UI/UX Standards
+# 🏛️ GramDisha AI — Master Design System Specification
 
-## 1. Product Identity & Design Thesis
+## 1. Product Thesis & Visual Identity
 
-- **Subject:** A financial decision-support tool used by a rural Indian entrepreneur, predominantly on a mid-range Android smartphone (often in Hindi), to evaluate the viability of a real business and bank loan application.
-- **Audience:** Someone with practical local business acumen but potentially limited formal financial literacy, making a high-stakes, life-changing financial decision.
-- **Primary Design Goal:** Make figures, repayment obligations, and recommendations feel **clear, calm, and trustworthy**. No "flashy fintech," no dark-mode SaaS dashboard tropes, no decorative rainbow cards, and no confusing clutter. The visual tone is warm, dignified, and authoritative—comparable to a modern institutional banking portal.
+**GramDisha AI** is a rural enterprise viability calculator and bank-loan structuring platform (SIH 2026 Hackathon prototype). It operates as a credible hybrid between an **official Indian bank credit appraisal document** (SBI, NABARD, PMMY) and a **modern Indian e-governance service portal** (such as JanSamarth / GeM / PM-KMY).
+
+### Key Directives:
+* **No AI/SaaS Tropes:** No generic Silicon Valley SaaS dashboards, no stark white-on-white card clusters, and no casual emoji.
+* **Warm Parchment & Charcoal Ink:** Rooted in physical Indian document/bond-paper aesthetics with deep institutional forest green and terracotta accents.
+* **Formal Typography:** Editorial serif/slab typography for certificate-like headings, hero viability figures, and official ledger tables, paired with crisp humanist sans for form controls.
+* **Monoline Iconography:** 100% SVG monoline vector iconography across all 8 rural trade models, navigation, and badges.
 
 ---
 
-## 2. Design Tokens & Palette Rules
+## 2. Color Palette & Semantic Assignment Rules
 
-### 2.1 Color Palette
+| Token Name | Hex Code | Role & Usage |
+| :--- | :--- | :--- |
+| **Canvas Paper Background** | `#F9F8F5` | Warm off-white parchment paper texture. |
+| **Document Card Surface** | `#FFFFFF` | Primary white document sheet with subtle parchment border. |
+| **Parchment Subtle Surface** | `#F2EEE5` | Alternating section containers, ledger header bands, data chips. |
+| **Parchment Border Default** | `#E1D9CC` | Fine document ruling line (0.75px–1px). |
+| **Parchment Border Strong** | `#C7BCA9` | Prominent division rules, active input focus bounds. |
+| **Charcoal Ink (Primary Text)**| `#1B221E` | High-contrast deep carbon black ink (>13:1 contrast). |
+| **Muted Ink (Secondary Text)** | `#4C5751` | Explanatory labels, bank terms, methodology subtitles. |
+| **Subtle Ink (Captions/Units)** | `#77837C` | Ledger units, footnotes, quiet metadata. |
+| **Institutional Bank Green** | `#144A38` | **Brand & Primary Action ONLY.** High-prestige Nationalised Bank green. |
+| **Terracotta Accent** | `#C25E00` | **Hero Viability Score & Agri Highlights.** Warm Indian terracotta clay. |
+| **Semantic: Recommended** | `#157347` | Reserved exclusively for "Highly Viable / Approved" state (`bg: #EBF7EE`, `border: #B7E4C7`). |
+| **Semantic: Caution** | `#B45309` | Reserved exclusively for "Conditional / Moderate Risk" state (`bg: #FEF7E6`, `border: #FCDA9C`). |
+| **Semantic: High Risk** | `#BA1A1A` | Reserved exclusively for "High Risk / Not Recommended" state (`bg: #FDF2F2`, `border: #F8B6B6`). |
+| **Official Scheme / Directive**| `#1B4965` | Official RBI / Ministry scheme parameters (`bg: #EFF6FB`, `border: #C1DCEE`). |
 
-Semantic colors are strictly limited and used **exclusively for meaningful outcome states** (viability verdict, risk level, health assessment), never for neutral factual data display (like EMI amount, loan amount, project cost).
+---
 
-| Token | CSS Variable | Value | Role / Usage |
-| :--- | :--- | :--- | :--- |
-| **Canvas Background** | `--color-bg` | `#FAF8F5` | Warm, calm off-white / light wheat canvas. |
-| **Surface (Card) Base** | `--color-surface` | `#FFFFFF` | Primary card and panel background. |
-| **Surface Subtle** | `--color-surface-subtle` | `#F4EFEB` | Alternating section containers, fieldset groupings, neutral data chips. |
-| **Surface Muted** | `--color-surface-muted` | `#EBE3D7` | Form inputs background, subtle dividers. |
-| **Border Default** | `--color-border` | `#DCD3C5` | Consistent card, table, and panel borders. |
-| **Border Strong** | `--color-border-strong` | `#BCB09F` | Focused elements, prominent separators. |
-| **Text Primary** | `--color-text` | `#1C1917` | Deep earthen near-black; primary copy, headings, and numbers. |
-| **Text Muted** | `--color-text-muted` | `#57534E` | Explanatory labels, subtitles, metadata. |
-| **Text Subtle** | `--color-text-subtle` | `#857E75` | Hints, units, timestamps. |
-| **Brand Primary / Accent** | `--color-positive` | `#1B5E20` | Deep forest green for primary CTA buttons, active tabs, wordmark. |
-| **Positive / Viable** | `--color-positive` | `#1B5E20` | High viability, profitable surplus, calculated accuracy. (Bg: `#E8F5E9`, Border: `#A5D6A7`) |
-| **Caution / Moderate** | `--color-caution` | `#B45309` | Moderate viability, tight cashflow, conditional approval. (Bg: `#FEF3C7`, Border: `#FDE68A`) |
-| **Negative / High Risk** | `--color-negative` | `#B91C1C` | Unviable state, deficit cashflow, critical risk alert. (Bg: `#FEE2E2`, Border: `#FCA5A5`) |
-| **Scheme / Official Rule** | `--color-rule` | `#0F52BA` | Official government scheme parameter / RBI banking rule. (Bg: `#EFF6FF`, Border: `#BFDBFE`) |
+## 3. Typography Hierarchy
 
-### 2.2 Neutral Data Display Rule (Non-Negotiable)
-- All factual data (Monthly Profit, Loan Amount, Monthly EMI, Margin Capital, Project Cost) must share **one calm, unified neutral card style** (white surface `#FFFFFF`, subtle border `#DCD3C5`, neutral numbers in `#1C1917`).
-- Never color-code neutral figures with pastel green/blue/yellow/purple rainbow chips.
+* **Headings & Hero Numbers:** `'Source Serif 4', 'Merriweather', 'Noto Serif Devanagari', Georgia, serif`
+* **Body & Form UI:** `'Plus Jakarta Sans', 'Inter', 'Noto Sans Devanagari', -apple-system, sans-serif`
+* **Tabular Figures:** `font-variant-numeric: tabular-nums` strictly enabled for currency columns, amortization ledgers, and EMI calculations.
+* **No ALL-CAPS Hierarchy:** Hierarchy is achieved through distinct type scale steps, serif styling, and font weights.
 
-### 2.3 Iconography Standards
-- **Business Model Categories:** Culturally-legible high-contrast emoji shorthand (🥛 🏪 🐔 🌾 🧵 🚜 🔧 🎨) embedded in clean, uniform neutral circular/rounded avatars (never inconsistent colored square boxes).
-- **UI / Controls / Navigation:** Standardized Lucide SVG icons (`w-4 h-4` / `w-5 h-5`), vertically centered with `leading-none` text labels.
+---
 
-### 2.4 Selection & Active States
-- Selected cards must **never** invert to a solid dark fill.
-- Selection is indicated via a **2–3px border in `#1B5E20`** plus a `ring-3 ring-[#1B5E20]/15`, preserving the clean white background and text contrast, with a discrete check indicator at the top right.
+## 4. Iconography Standards (Zero Emoji)
 
-### 2.5 Typography & Spacing Rhythm
-- **Font Family:** `font-sans: 'Inter', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif;`
-- **Headlines:** Set entirely in one consistent color/weight. No mid-sentence single-word coloring tricks.
-- **Section Spacing:** Generous `py-16 sm:py-20` vertical rhythm with subtle alternating backgrounds (`#FAF8F5` canvas and `#FFFFFF` / `#F4EFEB` containers).
-- **Language Toggle:** Prominent segmented control (`English | हिन्दी`) visible directly in the header.
+Monoline SVG stroke icons (1.5px–1.75px stroke) for all rural trades:
+* **Dairy & Milk:** Milk canister / milk bucket line art (`Milk`, `Droplets`)
+* **Retail & Kirana:** Village storefront / shop outline (`Store`, `ShoppingBag`)
+* **Poultry:** Bird farming / egg line art (`Egg`, `Feather`)
+* **Flour Mill & Spices:** Grain sheaf / flour mill cog (`Wheat`, `UtensilsCrossed`)
+* **Tailoring & Garments:** Stitching needle / apparel line (`Scissors`, `Shirt`)
+* **Tractor & Agro:** Farm machinery / tractor outline (`Tractor`, `Wrench`)
+* **Motor & Bike Workshop:** Vehicle repair spanner / gear (`Wrench`, `Settings`)
+* **Handicraft & Pottery:** Clay vase / artisan craftwork (`Palette`, `Hammer`)
+
+---
+
+## 5. Screen Breakdown & Flow Architecture
+
+1. **Enterprise Selection:** 8 monoline trade cards with sector profiles, capital thresholds, and quiet selection state.
+2. **Location Selection:** Regional catchment mapper with cascading State &rarr; District &rarr; Block &rarr; Village selector and demographic catchment preview.
+3. **Capital Structuring:** Dynamic 10% promoter equity vs. 90% bank loan ratio slider + live borrowing power ledger.
+4. **Viability Dashboard:** Grand **Radial Viability Gauge** (Hero Focal Point), 4 formal KPI summary boxes, RBI scheme mandate, and quick action pathways.
+5. **Loan & Repayment Ledger (Financial):** 28-Quarter amortization schedule, DSCR debt coverage calculation, and interactive quarterly loan balance chart.
+6. **Market Catchment & SWOT:** Primary (5km) and secondary (15km) radius demand, customer demographics, and 4-quadrant SWOT matrix.
+7. **Official Bank Proposal (DPR):** Formal printable Project Appraisal Dossier ready for submission to branch credit managers.

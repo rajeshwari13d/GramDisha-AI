@@ -15,8 +15,8 @@ export default function FloatingChat() {
     {
       role: 'assistant',
       text: isHi
-        ? 'नमस्ते! मैं GramDisha AI सहायक हूँ। इस विश्लेषण या योजना के बारे में मुझसे कोई भी प्रश्न पूछें।'
-        : 'Hello! I am your GramDisha AI assistant. Ask me anything about this business analysis or loan scheme.',
+        ? 'नमस्ते! मैं GramDisha AI ऋण सलाहकार सहायक हूँ। इस विश्लेषण या योजना के बारे में कोई भी प्रश्न पूछें।'
+        : 'Welcome! I am your GramDisha Credit Advisory Assistant. Ask any question regarding this viability appraisal or loan scheme.',
     },
   ]);
   const [input, setInput] = useState('');
@@ -31,7 +31,7 @@ export default function FloatingChat() {
       ]
     : [
         'Is subsidy available under this scheme?',
-        'How can I lower my monthly EMI?',
+        'How can I optimize my monthly EMI?',
         'What are the primary operational risks?',
       ];
 
@@ -98,35 +98,35 @@ export default function FloatingChat() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="flex items-center gap-2 bg-[var(--color-positive)] hover:bg-[#1A4931] text-white px-4 py-2.5 rounded-full shadow-md transition-colors border border-[var(--color-positive-border)] min-h-[44px] focus-visible:outline-2"
+          className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-full shadow-lg hover:shadow-xl transition-all border border-emerald-600 min-h-[44px] cursor-pointer"
           aria-label="Open AI Assistant"
         >
-          <Sparkles className="w-4 h-4 text-amber-200 shrink-0" />
-          <span className="font-semibold text-xs sm:text-sm">
-            {isHi ? 'GramDisha AI सहायक' : 'Ask AI Advisor'}
+          <Sparkles className="w-4 h-4 text-amber-300 shrink-0" />
+          <span className="font-bold text-xs sm:text-sm">
+            {isHi ? 'GramDisha AI सहायक' : 'Ask Credit Advisor'}
           </span>
         </button>
       )}
 
       {isOpen && (
-        <div className="w-[calc(100vw-2rem)] sm:w-[380px] md:w-[420px] h-[490px] max-h-[80vh] bg-[var(--color-surface)] rounded-xl shadow-xl border border-[var(--color-border)] flex flex-col overflow-hidden">
+        <div className="w-[calc(100vw-2rem)] sm:w-[390px] md:w-[420px] h-[520px] max-h-[82vh] doc-card-elevated shadow-2xl flex flex-col overflow-hidden bg-white border border-slate-200">
           {/* Header */}
-          <div className="bg-[var(--color-positive)] text-white px-4 py-3 flex items-center justify-between shrink-0">
+          <div className="bg-emerald-800 text-white px-4 py-3.5 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2.5 min-w-0">
-              <Bot className="w-5 h-5 text-amber-200 shrink-0" />
+              <Bot className="w-5 h-5 text-amber-300 shrink-0" />
               <div className="min-w-0">
                 <h3 className="font-bold text-sm tracking-wide truncate">
-                  {isHi ? 'GramDisha AI सहायक' : 'GramDisha AI Assistant'}
+                  {isHi ? 'GramDisha AI सहायक' : 'GramDisha Credit Advisor'}
                 </h3>
-                <p className="text-xs text-emerald-100 truncate">
-                  {analysis ? `${analysis.business_name} • ₹${(analysis.financial?.margin_capital || 0).toLocaleString('en-IN')}` : 'Business Advisor'}
+                <p className="text-[11px] text-emerald-100 truncate">
+                  {analysis ? `${analysis.business_name} • ₹${(analysis.financial?.margin_capital || 0).toLocaleString('en-IN')}` : 'Rural Enterprise Decision Support'}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-1 shrink-0">
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1 hover:bg-white/10 rounded-md text-emerald-100 transition-colors"
+                className="p-1 hover:bg-white/10 rounded-lg text-white transition-colors cursor-pointer"
                 title="Close"
                 aria-label="Close Chat"
               >
@@ -136,34 +136,34 @@ export default function FloatingChat() {
           </div>
 
           {/* Subheader Badge */}
-          <div className="bg-[var(--color-surface-subtle)] px-3 py-1.5 border-b border-[var(--color-border)] flex items-center justify-between shrink-0 text-[11px] text-[var(--color-text-muted)]">
-            <span>{isHi ? 'संदर्भ-सचेत सलाह' : 'Context-aware advisory'}</span>
+          <div className="bg-slate-50 px-3.5 py-1.5 border-b border-slate-200 flex items-center justify-between shrink-0 text-[11px] text-slate-500">
+            <span className="font-semibold">{isHi ? 'क्रेडिट संदर्भ-सचेत सलाह' : 'Context-aware appraisal advisory'}</span>
             <ProvenanceBadge type="ai_advisory" />
           </div>
 
           {/* Messages */}
-          <div className="flex-1 p-3.5 overflow-y-auto space-y-3 bg-[var(--color-bg)] text-xs sm:text-sm">
+          <div className="flex-1 p-3.5 overflow-y-auto space-y-3 bg-slate-50/60 text-xs">
             {messages.map((m, idx) => (
               <div
                 key={idx}
                 className={`flex gap-2 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {m.role === 'assistant' && (
-                  <div className="w-6 h-6 rounded-full bg-[var(--color-positive-bg)] text-[var(--color-positive)] flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center justify-center shrink-0 mt-0.5">
                     <Bot className="w-3.5 h-3.5" />
                   </div>
                 )}
                 <div
-                  className={`max-w-[82%] rounded-xl px-3 py-2.5 leading-relaxed shadow-2xs ${
+                  className={`max-w-[84%] rounded-xl px-3.5 py-2.5 leading-relaxed ${
                     m.role === 'user'
-                      ? 'bg-[var(--color-positive)] text-white rounded-br-none'
-                      : 'bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] rounded-bl-none'
+                      ? 'bg-emerald-700 text-white rounded-br-none'
+                      : 'bg-white border border-slate-200 text-slate-800 font-medium rounded-bl-none shadow-xs'
                   }`}
                 >
                   {m.text}
                 </div>
                 {m.role === 'user' && (
-                  <div className="w-6 h-6 rounded-full bg-[var(--color-surface-muted)] text-[var(--color-text-muted)] flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-6 h-6 rounded-lg bg-slate-200 text-slate-700 border border-slate-300 flex items-center justify-center shrink-0 mt-0.5">
                     <User className="w-3.5 h-3.5" />
                   </div>
                 )}
@@ -171,13 +171,13 @@ export default function FloatingChat() {
             ))}
             {loading && (
               <div className="flex gap-2 justify-start items-center">
-                <div className="w-6 h-6 rounded-full bg-[var(--color-positive-bg)] text-[var(--color-positive)] flex items-center justify-center shrink-0">
+                <div className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center justify-center shrink-0">
                   <Bot className="w-3.5 h-3.5" />
                 </div>
-                <div className="bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-muted)] rounded-xl px-3 py-2 text-xs flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-positive)] animate-pulse" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-positive)] animate-pulse delay-100" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-positive)] animate-pulse delay-200" />
+                <div className="bg-white border border-slate-200 text-slate-500 rounded-xl px-3 py-2 text-xs flex items-center gap-1.5 shadow-xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse delay-100" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse delay-200" />
                 </div>
               </div>
             )}
@@ -185,13 +185,13 @@ export default function FloatingChat() {
           </div>
 
           {/* Quick suggestions */}
-          <div className="p-2 border-t border-[var(--color-border)] bg-[var(--color-surface)] flex gap-1.5 overflow-x-auto text-[11px]">
+          <div className="p-2 border-t border-slate-200 bg-white flex gap-1.5 overflow-x-auto text-[11px]">
             {quickQuestions.map((q, i) => (
               <button
                 key={i}
                 onClick={() => handleSend(q)}
                 disabled={loading}
-                className="whitespace-nowrap bg-[var(--color-surface-subtle)] text-[var(--color-text)] hover:bg-[var(--color-surface-muted)] border border-[var(--color-border)] px-2.5 py-1 rounded-md transition-colors font-medium shrink-0"
+                className="whitespace-nowrap bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 px-2.5 py-1 rounded-lg transition-colors font-medium shrink-0 cursor-pointer"
               >
                 {q}
               </button>
@@ -199,20 +199,20 @@ export default function FloatingChat() {
           </div>
 
           {/* Input */}
-          <div className="p-2.5 border-t border-[var(--color-border)] bg-[var(--color-surface)] flex items-center gap-2 shrink-0">
+          <div className="p-2.5 border-t border-slate-200 bg-white flex items-center gap-2 shrink-0">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder={isHi ? 'प्रश्न लिखें...' : 'Type your question...'}
+              placeholder={isHi ? 'प्रश्न लिखें...' : 'Type your query...'}
               disabled={loading}
-              className="flex-1 border border-[var(--color-border)] rounded-lg px-3 py-2 text-xs sm:text-sm text-[var(--color-text)] focus:outline-none focus:border-[var(--color-positive)] bg-[var(--color-surface)]"
+              className="flex-1 doc-input py-2 text-xs bg-slate-50"
             />
             <button
               onClick={() => handleSend()}
               disabled={loading || !input.trim()}
-              className="bg-[var(--color-positive)] hover:bg-[#1A4931] disabled:opacity-40 text-white p-2.5 rounded-lg transition-colors shrink-0"
+              className="bg-emerald-700 hover:bg-emerald-800 disabled:opacity-40 text-white p-2.5 rounded-xl transition-colors shrink-0 cursor-pointer shadow-xs"
               aria-label="Send message"
             >
               <Send className="w-3.5 h-3.5" />

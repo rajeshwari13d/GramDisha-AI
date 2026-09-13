@@ -17,7 +17,7 @@
   "landing": {
     "hero_title": "Turn Your Business Idea Into a Data-Backed Plan",
     "hero_subtitle": "AI-powered business advisory for rural entrepreneurs. Get market intelligence, financial structuring, and viability analysis — all in one place.",
-    "cta": "🚀 Start Business Assessment",
+    "cta": "Start Business Assessment",
     "layer1_title": "Local Intelligence",
     "layer1_desc": "Understand your local market — demand, competition, customer segments, and opportunities in your area.",
     "layer2_title": "Financial Intelligence",
@@ -44,7 +44,7 @@
     "business": "Business Category",
     "business_placeholder": "Select a business category",
     "language_label": "Report Language",
-    "submit": "🔍 Analyze My Business",
+    "submit": "Analyze My Business",
     "validation": {
       "state_required": "Please select a state.",
       "district_required": "Please select a district.",
@@ -70,7 +70,7 @@
       "viability": "Calculating viability"
     },
     "error": "We couldn't complete the full analysis.",
-    "retry": "🔄 Retry Analysis"
+    "retry": "Retry Analysis"
   },
   "dashboard": {
     "title": "Business Analysis Dashboard",
@@ -145,15 +145,15 @@
   "recommendations": {
     "title": "Business Recommendations",
     "subtitle": "Actionable insights and strategy for your business.",
-    "strategy": "🎯 Recommended Strategy",
-    "target_customers": "📍 Target Customers",
-    "pricing": "💰 Pricing Strategy",
-    "inventory": "📦 Inventory Strategy",
-    "risk_mitigation": "⚠️ Risk Mitigation",
-    "growth": "📈 Growth Strategy",
-    "do_list": "✅ Do",
-    "avoid_list": "❌ Avoid",
-    "conditions": "⚠️ Conditions"
+    "strategy": "Recommended Strategy",
+    "target_customers": "Target Customers",
+    "pricing": "Pricing Strategy",
+    "inventory": "Inventory Strategy",
+    "risk_mitigation": "Risk Mitigation",
+    "growth": "Growth Strategy",
+    "do_list": "Do",
+    "avoid_list": "Avoid",
+    "conditions": "Conditions"
   },
   "comparison": {
     "title": "Business Comparison",
@@ -165,13 +165,13 @@
     "risk": "Risk",
     "financial_health": "Financial",
     "viability": "Viability",
-    "recommended": "🏆 AI Recommended",
+    "recommended": "AI Recommended",
     "score": "Score"
   },
   "report": {
     "title": "Business Report",
     "subtitle": "Download your complete business analysis report.",
-    "download": "📥 Download PDF Report",
+    "download": "Download PDF Report",
     "generating": "Generating report...",
     "preview": "Report Preview",
     "error": "Failed to generate report. Your analysis is still available on the dashboard."

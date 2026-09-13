@@ -7,11 +7,20 @@ import {
   Calendar,
   TrendingUp,
   ChevronDown,
+  FileSpreadsheet,
+  Landmark,
+  ShieldCheck,
+  Scale,
+  Sparkles,
+  Layers,
+  Filter,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
   BarChart,
   Bar,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   Tooltip,
@@ -24,377 +33,376 @@ import VoiceButton from '../components/VoiceButton';
 
 export default function Financial() {
   const { analysis } = useContext(AnalysisContext);
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const navigate = useNavigate();
   const isHi = i18n.language === 'hi';
+
+  const [selectedTenure, setSelectedTenure] = useState(7);
+  const [chartType, setChartType] = useState('bar');
+  const [yearFilter, setYearFilter] = useState('all');
   const [showAllQuarters, setShowAllQuarters] = useState(false);
 
   if (!analysis) {
     return (
-      <div className="w-full max-w-5xl mx-auto px-4 my-16 max-w-md p-8 gd-card text-center space-y-4">
-        <h3 className="text-lg font-bold text-[var(--color-text)]">
-          {isHi ? 'कोई सक्रिय विश्लेषण नहीं मिला' : 'No Active Analysis'}
+      <div className="app-container my-16 max-w-md p-8 bg-white border border-slate-200 rounded-2xl text-center space-y-4 shadow-sm">
+        <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 mx-auto flex items-center justify-center text-lg font-bold">
+          GD
+        </div>
+        <h3 className="text-lg font-bold text-slate-900">
+          {isHi ? 'कोई सक्रिय वित्तीय विश्लेषण नहीं मिला' : 'No Active Financial Appraisal Found'}
         </h3>
         <button
           onClick={() => navigate('/assess')}
-          className="gd-btn-primary mx-auto"
+          className="gd-btn-primary mx-auto font-bold"
         >
-          {isHi ? 'नया विश्लेषण शुरू करें' : 'Start Assessment'}
+          {isHi ? 'नया मूल्यांकन शुरू करें' : 'Start Assessment'}
         </button>
       </div>
     );
   }
 
-  const { financial, financial_health, business_analysis, quarterly_repayment } = analysis;
+  const { financial, quarterly_repayment } = analysis;
 
   const displayScheme = isHi ? financial.scheme_hi || financial.scheme : financial.scheme;
-  const marginPct = ((financial.margin_capital / financial.project_cost) * 100).toFixed(0);
-  const loanPct = ((financial.loan_amount / financial.project_cost) * 100).toFixed(0);
+  const projectCost = financial.project_cost || 0;
+  const marginCapital = financial.margin_capital || 0;
+  const loanAmount = financial.loan_amount || 0;
+  const marginPct = projectCost > 0 ? ((marginCapital / projectCost) * 100).toFixed(0) : '10';
+  const loanPct = projectCost > 0 ? ((loanAmount / projectCost) * 100).toFixed(0) : '90';
 
-  // Format quarterly data for Recharts
-  const chartData = (quarterly_repayment || []).slice(0, 16).map((q) => ({
-    name: q.quarter_number ? `Q${q.quarter_number}` : q.quarter,
-    [isHi ? 'मूलधन (Principal)' : 'Principal']: Math.round(q.principal),
-    [isHi ? 'ब्याज (Interest)' : 'Interest']: Math.round(q.interest),
-    total: Math.round(q.total_payment),
-    balance: Math.round(q.remaining_balance || 0),
+  const annualRate = (financial.interest_rate || 8.5) / 100;
+  const monthlyRate = annualRate / 12;
+  const tenureMonths = selectedTenure * 12;
+  const calculatedEmi = Math.round(
+    (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, tenureMonths)) /
+      (Math.pow(1 + monthlyRate, tenureMonths) - 1)
+  );
+
+  const totalRepayment = calculatedEmi * tenureMonths;
+  const totalInterest = Math.max(0, totalRepayment - loanAmount);
+
+  const chartData = (quarterly_repayment || []).slice(0, selectedTenure * 4).map((q, idx) => ({
+    name: q.quarter_number ? `Q${q.quarter_number}` : q.quarter || `Q${idx + 1}`,
+    [isHi ? 'मूलधन (Principal)' : 'Principal']: Math.round(q.principal || (loanAmount / (selectedTenure * 4))),
+    [isHi ? 'ब्याज (Interest)' : 'Interest']: Math.round(q.interest || (totalInterest / (selectedTenure * 4))),
+    balance: Math.round(q.remaining_balance || Math.max(0, loanAmount - (idx + 1) * (loanAmount / (selectedTenure * 4)))),
   }));
 
-  const visibleQuarters = showAllQuarters
-    ? quarterly_repayment || []
-    : (quarterly_repayment || []).slice(0, 8);
+  const allQuartersList = quarterly_repayment || [];
+  const filteredQuarters = yearFilter === 'all'
+    ? (showAllQuarters ? allQuartersList : allQuartersList.slice(0, 8))
+    : allQuartersList.filter((_, i) => Math.floor(i / 4) + 1 === Number(yearFilter));
 
   const voiceFinancialText = isHi
-    ? `वित्तीय संरचना: कुल लागत ₹${(financial.project_cost / 100000).toFixed(1)} लाख है। आपकी पूंजी ₹${(financial.margin_capital / 100000).toFixed(1)} लाख और बैंक लोन ₹${(financial.loan_amount / 100000).toFixed(1)} लाख है। महीने की किस्त ₹${financial.monthly_emi} है।`
-    : `Financial structure: Total cost is ₹${financial.project_cost.toLocaleString('en-IN')}. Your margin is ₹${financial.margin_capital.toLocaleString('en-IN')} and bank loan is ₹${financial.loan_amount.toLocaleString('en-IN')} under ${displayScheme}. Monthly EMI is ₹${financial.monthly_emi}.`;
+    ? `वित्तीय संरचना: कुल लागत ₹${(projectCost / 100000).toFixed(1)} लाख है। आपकी पूंजी ₹${(marginCapital / 100000).toFixed(1)} लाख और बैंक लोन ₹${(loanAmount / 100000).toFixed(1)} लाख है। ${selectedTenure} वर्ष अवधि पर महीने की किस्त ₹${calculatedEmi} है।`
+    : `Financial structure: Total project outlay is ₹${projectCost.toLocaleString('en-IN')}. Promoter margin is ₹${marginCapital.toLocaleString('en-IN')} and bank term loan is ₹${loanAmount.toLocaleString('en-IN')} under ${displayScheme}. At ${selectedTenure}-year tenure, monthly debt service is ₹${calculatedEmi}.`;
 
   return (
-    <div className="app-container py-6 sm:py-10 space-y-6 sm:space-y-8">
+    <div className="app-container py-8 sm:py-10 space-y-7">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--color-border)] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[var(--color-text)] tracking-tight">
-            {isHi ? '💰 वित्तीय संरचना व बैंक ऋण विवरण' : '💰 Financial Structure & Loan Details'}
+          <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 block mb-0.5">
+            {isHi ? 'अनुसूची I: वित्तीय संरचना' : 'Annexure I: Debt Structuring'}
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            {isHi ? 'पूंजी संरचना एवं ऋण शोधन सारणी' : 'Capital Structure & Amortization Ledger'}
           </h1>
-          <p className="text-xs sm:text-sm text-[var(--color-text-muted)] mt-1 font-medium">
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             {isHi
-              ? '10:90 पूंजी अनुपात, आधिकारिक बैंक योजना व ऋण शोधन अनुसूची'
-              : 'Deterministic 10:90 capital structure, official banking scheme & amortization'}
+              ? '10:90 पूंजी अनुपात, सरकारी सावधि ऋण योजना एवं 28-तिमाही किस्तों का विवरण'
+              : 'Statutory 10:90 capital ratio, concessional scheme routing, and 28-quarter amortization schedule'}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <VoiceButton
             text={voiceFinancialText}
             language={i18n.language}
-            label={isHi ? 'विवरण सुनें 🔊' : 'Listen 🔊'}
+            label={isHi ? 'वित्तीय विवरण सुनें' : 'Listen Summary'}
           />
           <ProvenanceBadge type="calculated" />
         </div>
       </div>
 
-      {/* Grid: Capital Structure & Scheme Rule */}
+      {/* Capital Ratio & Scheme Card Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        {/* Capital Structure Card (7 cols desktop) */}
-        <div className="lg:col-span-7 gd-card p-5 sm:p-6 flex flex-col justify-between space-y-5">
+        {/* Capital Structure Card */}
+        <div className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 flex flex-col justify-between space-y-5 shadow-sm">
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-2.5">
-              <div className="flex items-center gap-2 font-bold text-[var(--color-text)] text-sm sm:text-base">
-                <Coins className="w-4 h-4 text-[var(--color-positive)] shrink-0" />
-                <span>{isHi ? 'पूंजी व परियोजना लागत संरचना (10:90)' : 'Project Cost Structure (10:90)'}</span>
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2 font-bold text-slate-900 text-sm sm:text-base">
+                <Coins className="w-4 h-4 text-emerald-700 shrink-0" />
+                <span>{isHi ? 'परियोजना लागत विभाजन (10:90)' : 'Project Cost Breakdown (10:90)'}</span>
               </div>
-              <ProvenanceBadge type="calculated" />
+              <span className="text-xs font-semibold text-slate-500">PMMY / NABARD</span>
             </div>
 
             {/* Total Highlight */}
-            <div className="p-4 rounded-xl bg-[var(--color-surface-subtle)] border border-[var(--color-border)] flex items-center justify-between">
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">
-                  {isHi ? 'कुल परियोजना लागत (Project Cost)' : 'Total Project Cost'}
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  {isHi ? 'कुल परियोजना लागत (Project Cost)' : 'Total Project Outlay'}
                 </span>
-                <div className="text-2xl sm:text-3xl font-black text-[var(--color-text)] tabular-nums mt-0.5">
-                  ₹{(financial.project_cost || 0).toLocaleString('en-IN')}
+                <div className="text-2xl sm:text-3xl font-bold text-slate-900 tabular-nums mt-0.5">
+                  ₹{projectCost.toLocaleString('en-IN')}
                 </div>
               </div>
-              <span className="text-xs font-bold px-2 py-1 rounded bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)]">
-                100%
+              <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-800">
+                100% Outlay
               </span>
             </div>
 
             {/* Split Bar */}
             <div className="space-y-1.5">
-              <div className="flex justify-between text-xs font-semibold text-[var(--color-text-muted)]">
-                <span>{isHi ? 'स्वयं का अंशदान (10%)' : 'Margin Money (10%)'}</span>
-                <span>{isHi ? 'बैंक ऋण अंश (90%)' : 'Bank Loan (90%)'}</span>
+              <div className="flex justify-between text-xs font-semibold text-slate-600">
+                <span>{isHi ? `प्रवर्तक पूंजी (${marginPct}%)` : `Promoter Equity (${marginPct}%)`}</span>
+                <span>{isHi ? `बैंक ऋण (${loanPct}%)` : `Bank Term Loan (${loanPct}%)`}</span>
               </div>
-              <div className="w-full h-3 bg-[var(--color-surface-subtle)] rounded-full flex overflow-hidden border border-[var(--color-border)]">
+              <div className="w-full h-3 bg-slate-100 rounded-full flex overflow-hidden border border-slate-200">
                 <div
-                  className="h-full transition-all"
-                  style={{ width: `${marginPct}%`, backgroundColor: 'var(--color-caution)' }}
+                  className="h-full bg-amber-500 transition-all"
+                  style={{ width: `${marginPct}%` }}
                 />
                 <div
-                  className="h-full transition-all"
-                  style={{ width: `${loanPct}%`, backgroundColor: 'var(--color-positive)' }}
+                  className="h-full bg-emerald-700 transition-all"
+                  style={{ width: `${loanPct}%` }}
                 />
               </div>
             </div>
 
             {/* Structured 2-column breakdown table */}
-            <div className="border border-[var(--color-border)] rounded-xl overflow-hidden divide-y divide-[var(--color-border)] text-xs sm:text-sm">
-              <div className="p-3 flex justify-between items-center bg-[var(--color-surface)]">
-                <span className="text-[var(--color-text-muted)] font-medium">
-                  {isHi ? 'उपलब्ध पूंजी (मार्जिन):' : 'Available Capital (Margin):'}
+            <div className="border border-slate-200 rounded-xl overflow-hidden divide-y divide-slate-100 text-xs sm:text-sm">
+              <div className="p-3.5 flex justify-between items-center bg-white">
+                <span className="text-slate-600 font-medium">
+                  {isHi ? 'प्रवर्तक मार्जिन राशि (10%):' : 'Promoter Margin Contribution (10%):'}
                 </span>
-                <span className="font-bold text-[var(--color-text)] tabular-nums">
-                  ₹{(financial.margin_capital || 0).toLocaleString('en-IN')}
+                <span className="font-mono font-bold text-slate-900 tabular-nums">
+                  ₹{marginCapital.toLocaleString('en-IN')}
                 </span>
               </div>
 
-              <div className="p-3 flex justify-between items-center bg-[var(--color-surface)]">
-                <span className="text-[var(--color-text-muted)] font-medium">
-                  {isHi ? 'स्वीकृत बैंक ऋण (90%):' : 'Sanctioned Loan Component:'}
+              <div className="p-3.5 flex justify-between items-center bg-white">
+                <span className="text-slate-600 font-medium">
+                  {isHi ? 'स्वीकृत सावधि बैंक ऋण (90%):' : 'Sanctioned Term Loan (90%):'}
                 </span>
-                <span className="font-bold text-[var(--color-positive)] tabular-nums">
-                  ₹{(financial.loan_amount || 0).toLocaleString('en-IN')}
+                <span className="font-mono font-bold text-emerald-700 tabular-nums">
+                  ₹{loanAmount.toLocaleString('en-IN')}
                 </span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Scheme Rule Card (5 cols desktop) */}
-        <div className="lg:col-span-5 gd-card p-5 sm:p-6 flex flex-col justify-between space-y-4 border-[var(--color-rule-border)] bg-[var(--color-rule-bg)]">
+        {/* Scheme Rule Card */}
+        <div className="lg:col-span-5 bg-sky-50/50 border border-sky-200 rounded-2xl p-6 sm:p-7 flex flex-col justify-between space-y-4 shadow-sm">
           <div className="space-y-3">
-            <div className="flex items-center justify-between border-b border-[var(--color-rule-border)] pb-2.5">
+            <div className="flex items-center justify-between border-b border-sky-200 pb-3">
               <div className="flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-[var(--color-rule)] shrink-0" />
-                <span className="font-bold text-xs sm:text-sm text-[var(--color-rule)] uppercase tracking-wider">
-                  {isHi ? 'लागू सरकारी बैंक योजना' : 'Applicable Scheme'}
+                <Building2 className="w-4 h-4 text-sky-800 shrink-0" />
+                <span className="font-bold text-xs text-sky-800 uppercase tracking-wider">
+                  {isHi ? 'लागू वैधानिक योजना' : 'Mandated Credit Scheme'}
                 </span>
               </div>
               <ProvenanceBadge type="official_rule" />
             </div>
 
             <div className="space-y-1">
-              <h3 className="text-xl sm:text-2xl font-black text-[var(--color-text)] leading-snug">
+              <h3 className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
                 {displayScheme}
               </h3>
-              <p className="text-xs text-[var(--color-text-muted)]">
-                {isHi ? 'आरबीआई एवं योजना नियमावली अनुसार रूटिंग' : 'Rule-based scheme assignment based on project cost'}
+              <p className="text-xs text-slate-500">
+                {isHi ? 'परियोजना लागत के आधार पर स्वचालित योजना आवंटन' : 'Automated scheme routing based on statutory project cost thresholds'}
               </p>
             </div>
 
+            {/* Interactive Tenure Toggle */}
+            <div className="space-y-1.5 pt-1">
+              <label className="text-xs font-bold text-sky-900 uppercase tracking-wider block">
+                {isHi ? 'ऋण अवधि चुनें (Tenure):' : 'Select Loan Tenure:'}
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {[3, 5, 7].map((yr) => (
+                  <button
+                    key={yr}
+                    type="button"
+                    onClick={() => setSelectedTenure(yr)}
+                    className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
+                      selectedTenure === yr
+                        ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs'
+                        : 'bg-white text-slate-800 border-sky-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    {yr} {isHi ? 'वर्ष' : 'Years'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Scheme Parameters Table */}
-            <div className="bg-[var(--color-surface)] p-3.5 rounded-xl border border-[var(--color-rule-border)] space-y-2 text-xs sm:text-sm">
+            <div className="bg-white p-3.5 rounded-xl border border-sky-200 space-y-2 text-xs sm:text-sm">
               <div className="flex justify-between items-center">
-                <span className="text-[var(--color-text-muted)]">{isHi ? 'वार्षिक ब्याज दर:' : 'Interest Rate:'}</span>
-                <span className="font-bold text-[var(--color-text)] tabular-nums">{financial.interest_rate}% p.a.</span>
+                <span className="text-slate-600">{isHi ? 'वार्षिक ब्याज दर:' : 'Interest Rate:'}</span>
+                <span className="font-mono font-bold text-slate-900 tabular-nums">{financial.interest_rate || 8.5}% p.a.</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[var(--color-text-muted)]">{isHi ? 'ऋण चुकौती अवधि:' : 'Repayment Tenure:'}</span>
-                <span className="font-bold text-[var(--color-text)] tabular-nums">{financial.tenure_years} {isHi ? 'वर्ष' : 'Years'}</span>
+                <span className="text-slate-600">{isHi ? 'कुल ब्याज देय:' : 'Total Interest Payable:'}</span>
+                <span className="font-mono font-bold text-amber-700 tabular-nums">₹{totalInterest.toLocaleString('en-IN')}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-[var(--color-text-muted)]">{isHi ? 'मोरेटोरियम (छूट):' : 'Moratorium Period:'}</span>
-                <span className="font-bold text-[var(--color-text)] tabular-nums">{financial.moratorium_months || 0} {isHi ? 'माह' : 'Months'}</span>
-              </div>
-              <div className="flex justify-between items-center pt-2 border-t border-[var(--color-border)] font-bold">
-                <span className="text-[var(--color-text)]">{isHi ? 'मासिक ईएमआई (किस्त):' : 'Monthly EMI:'}</span>
-                <span className="text-base font-extrabold text-[var(--color-positive)] tabular-nums">
-                  ₹{(financial.estimated_emi || 0).toLocaleString('en-IN')}
+              <div className="flex justify-between items-center pt-2 border-t border-slate-100 font-bold">
+                <span className="text-emerald-800">{isHi ? 'मासिक किस्त (EMI):' : 'Monthly EMI:'}</span>
+                <span className="font-mono text-base text-emerald-700 tabular-nums">
+                  ₹{calculatedEmi.toLocaleString('en-IN')}
                 </span>
               </div>
             </div>
           </div>
-
-          <p className="text-[11px] text-[var(--color-text-muted)] leading-relaxed">
-            {financial.loan_limit_applied
-              ? (isHi ? 'योजना सीमा लागू कर ऋण राशि को समायोजित किया गया है।' : 'Sanctioned loan is clamped to the statutory scheme maximum.')
-              : (isHi ? 'ऋण राशि योजना के मानक दिशा-निर्देशों के पूर्णतः अनुरूप है।' : 'Loan amount conforms to standard category guidelines.')}
-          </p>
         </div>
       </div>
 
-      {/* Cash Flow Feasibility & DSCR */}
-      <div className="gd-card p-5 sm:p-6 space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--color-border)] pb-3">
+      {/* ── 3. RECHARTS AMORTIZATION VISUALIZER ── */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 space-y-4 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
           <div>
-            <div className="flex items-center gap-2 font-bold text-[var(--color-text)] text-sm sm:text-base">
-              <TrendingUp className="w-4 h-4 text-[var(--color-positive)] shrink-0" />
-              <span>{isHi ? 'मासिक नकदी प्रवाह व ऋण भुगतान क्षमता' : 'Monthly Cash Flow & Repayment Capacity'}</span>
-            </div>
-            <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-              {isHi
-                ? 'मासिक अनुमानित आय में से परिचालन व्यय और ईएमआई घटाने के बाद शुद्ध बचत का आकलन।'
-                : 'Projected monthly gross revenue minus operating overhead and EMI obligation.'}
+            <h3 className="text-base font-bold text-slate-900">
+              {isHi ? 'ऋण शोधन प्रवृत्ति (Amortization Visualization)' : 'Amortization Trajectory & Debt Paydown'}
+            </h3>
+            <p className="text-xs text-slate-500">
+              {isHi ? `${selectedTenure} वर्ष अवधि पर तिमाही ऋण अदायगी एवं घटते शेष का चार्ट` : `Quarterly debt repayment trajectory across ${selectedTenure}-year tenure`}
             </p>
           </div>
-          <ProvenanceBadge type="calculated" />
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-4 rounded-xl bg-[var(--color-surface-subtle)] border border-[var(--color-border)] space-y-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">
-              {isHi ? 'अनुमानित आय' : 'Est. Monthly Revenue'}
-            </span>
-            <div className="text-xl font-bold text-[var(--color-text)] tabular-nums">
-              ₹{(business_analysis.estimated_monthly_revenue || 0).toLocaleString('en-IN')}
-            </div>
-            <span className="text-[11px] text-[var(--color-text-subtle)] block">Gross baseline</span>
-          </div>
-
-          <div className="p-4 rounded-xl bg-[var(--color-surface-subtle)] border border-[var(--color-border)] space-y-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">
-              {isHi ? 'परिचालन व्यय' : 'Est. Operating Cost'}
-            </span>
-            <div className="text-xl font-bold text-[var(--color-text)] tabular-nums">
-              ₹{(business_analysis.estimated_operating_cost || 0).toLocaleString('en-IN')}
-            </div>
-            <span className="text-[11px] text-[var(--color-text-subtle)] block">Materials & utilities</span>
-          </div>
-
-          <div className="p-4 rounded-xl bg-[var(--color-surface-subtle)] border border-[var(--color-border)] space-y-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">
-              {isHi ? 'मासिक ईएमआई' : 'Monthly Loan EMI'}
-            </span>
-            <div className="text-xl font-bold text-[var(--color-positive)] tabular-nums">
-              ₹{(financial.estimated_emi || 0).toLocaleString('en-IN')}
-            </div>
-            <span className="text-[11px] text-[var(--color-text-muted)] block font-medium">{financial.interest_rate}% interest</span>
-          </div>
-
-          <div
-            className="p-4 rounded-xl border space-y-1"
-            style={{
-              backgroundColor: financial_health.status === 'comfortable' ? 'var(--color-positive-bg)' : financial_health.status === 'risky' ? 'var(--color-negative-bg)' : 'var(--color-caution-bg)',
-              borderColor: financial_health.status === 'comfortable' ? 'var(--color-positive-border)' : financial_health.status === 'risky' ? 'var(--color-negative-border)' : 'var(--color-caution-border)',
-            }}
-          >
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">
-              {isHi ? 'शुद्ध मासिक बचत' : 'Net Monthly Surplus'}
-            </span>
-            <div
-              className="text-xl font-extrabold tabular-nums"
-              style={{
-                color: financial_health.status === 'comfortable' ? 'var(--color-positive)' : financial_health.status === 'risky' ? 'var(--color-negative)' : 'var(--color-caution)',
-              }}
+          {/* Chart Type Toggle */}
+          <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200 self-start sm:self-auto">
+            <button
+              type="button"
+              onClick={() => setChartType('bar')}
+              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                chartType === 'bar' ? 'bg-emerald-700 text-white shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'
+              }`}
             >
-              ₹{(financial_health.monthly_surplus || 0).toLocaleString('en-IN')}
-            </div>
-            <span
-              className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border bg-white mt-0.5"
-              style={{
-                color: financial_health.status === 'comfortable' ? 'var(--color-positive)' : financial_health.status === 'risky' ? 'var(--color-negative)' : 'var(--color-caution)',
-                borderColor: financial_health.status === 'comfortable' ? 'var(--color-positive-border)' : financial_health.status === 'risky' ? 'var(--color-negative-border)' : 'var(--color-caution-border)',
-              }}
+              {isHi ? 'किस्त विभाजन (Bar)' : 'EMI Breakdown (Bar)'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setChartType('area')}
+              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                chartType === 'area' ? 'bg-emerald-700 text-white shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900'
+              }`}
             >
-              {isHi ? financial_health.label_hi : financial_health.label_en}
-            </span>
+              {isHi ? 'शेष ऋण कमी (Paydown)' : 'Remaining Balance (Area)'}
+            </button>
           </div>
-        </div>
-      </div>
-
-      {/* Quarterly Amortization Chart */}
-      <div className="gd-card p-5 sm:p-6 space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--color-border)] pb-3">
-          <div>
-            <div className="flex items-center gap-2 font-bold text-[var(--color-text)] text-sm sm:text-base">
-              <Calendar className="w-4 h-4 text-[var(--color-positive)] shrink-0" />
-              <span>{isHi ? 'त्रैमासिक ऋण चुकौती अनुसूची (चार्ट)' : 'Quarterly Loan Amortization Chart'}</span>
-            </div>
-            <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-              {isHi
-                ? 'प्रत्येक तिमाही में चुकाए जाने वाले मूलधन और ब्याज का विभाजन'
-                : 'Principal vs interest payment breakdown across quarterly milestones'}
-            </p>
-          </div>
-          <ProvenanceBadge type="calculated" />
         </div>
 
         <div className="h-64 sm:h-72 w-full pt-2">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
-              <XAxis dataKey="name" stroke="var(--color-text-subtle)" fontSize={11} />
-              <YAxis stroke="var(--color-text-subtle)" fontSize={11} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
-              <Tooltip
-                formatter={(val) => `₹${Number(val).toLocaleString('en-IN')}`}
-                contentStyle={{
-                  backgroundColor: 'var(--color-surface)',
-                  borderRadius: '10px',
-                  border: '1px solid var(--color-border)',
-                  fontSize: '12px',
-                  boxShadow: '0 2px 8px rgba(31,27,22,0.08)',
-                }}
-              />
-              <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
-              <Bar dataKey={isHi ? 'मूलधन (Principal)' : 'Principal'} stackId="a" fill="var(--color-positive)" radius={[0, 0, 0, 0]} />
-              <Bar dataKey={isHi ? 'ब्याज (Interest)' : 'Interest'} stackId="a" fill="var(--color-caution)" radius={[4, 4, 0, 0]} />
-            </BarChart>
+            {chartType === 'bar' ? (
+              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#64748B' }} tickLine={false} axisLine={{ stroke: '#E2E8F0' }} />
+                <YAxis tick={{ fontSize: 11, fill: '#64748B' }} tickLine={false} axisLine={false} tickFormatter={(v) => `₹${(v/1000).toFixed(0)}k`} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#FFFFFF',
+                    borderColor: '#E2E8F0',
+                    borderRadius: '10px',
+                    boxShadow: '0 4px 12px rgba(15,23,42,0.08)',
+                    fontSize: '12px',
+                  }}
+                  formatter={(val) => [`₹${Number(val).toLocaleString('en-IN')}`, '']}
+                />
+                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                <Bar dataKey={isHi ? 'मूलधन (Principal)' : 'Principal'} fill="#047857" stackId="a" />
+                <Bar dataKey={isHi ? 'ब्याज (Interest)' : 'Interest'} fill="#D97706" stackId="a" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            ) : (
+              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#64748B' }} tickLine={false} axisLine={{ stroke: '#E2E8F0' }} />
+                <YAxis tick={{ fontSize: 11, fill: '#64748B' }} tickLine={false} axisLine={false} tickFormatter={(v) => `₹${(v/100000).toFixed(1)}L`} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#FFFFFF',
+                    borderColor: '#E2E8F0',
+                    borderRadius: '10px',
+                    boxShadow: '0 4px 12px rgba(15,23,42,0.08)',
+                    fontSize: '12px',
+                  }}
+                  formatter={(val) => [`₹${Number(val).toLocaleString('en-IN')}`, isHi ? 'शेष मूलधन' : 'Remaining Balance']}
+                />
+                <Area type="monotone" dataKey="balance" stroke="#047857" fill="#047857" fillOpacity={0.15} strokeWidth={2} />
+              </AreaChart>
+            )}
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Repayment Table */}
-      <div className="gd-card p-5 sm:p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-3">
-          <h3 className="text-sm sm:text-base font-bold text-[var(--color-text)]">
-            {isHi ? 'विस्तृत त्रैमासिक ऋण तालिका' : 'Quarterly Repayment Schedule Table'}
-          </h3>
-          <span className="text-xs text-[var(--color-text-muted)] font-medium tabular-nums">
-            {quarterly_repayment?.length || 0} {isHi ? 'तिमाहियां' : 'Quarters'}
-          </span>
+      {/* ── 4. DETAILED 28-QUARTER TABLE ── */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 space-y-4 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+          <div>
+            <h3 className="text-base font-bold text-slate-900">
+              {isHi ? '28-तिमाही ऋण शोधन सारणी' : '28-Quarter Repayment Schedule Ledger'}
+            </h3>
+            <p className="text-xs text-slate-500">
+              {isHi ? 'बैंक ऋण प्रबंधक सत्यापन हेतु पूर्ण किस्त सारणी' : 'Comprehensive debt amortization breakdown for credit verification'}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <select
+              value={yearFilter}
+              onChange={(e) => setYearFilter(e.target.value)}
+              className="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50"
+            >
+              <option value="all">{isHi ? 'सभी वर्ष (All Years)' : 'All Years'}</option>
+              <option value="1">{isHi ? 'वर्ष 1 (Q1-Q4)' : 'Year 1'}</option>
+              <option value="2">{isHi ? 'वर्ष 2 (Q5-Q8)' : 'Year 2'}</option>
+              <option value="3">{isHi ? 'वर्ष 3 (Q9-Q12)' : 'Year 3'}</option>
+              <option value="4">{isHi ? 'वर्ष 4 (Q13-Q16)' : 'Year 4'}</option>
+              <option value="5">{isHi ? 'वर्ष 5 (Q17-Q20)' : 'Year 5'}</option>
+            </select>
+
+            {yearFilter === 'all' && (
+              <button
+                type="button"
+                onClick={() => setShowAllQuarters(!showAllQuarters)}
+                className="gd-btn-secondary text-xs px-3 py-1.5 min-h-[34px] font-semibold"
+              >
+                {showAllQuarters
+                  ? (isHi ? 'कम देखें (8 तिमाही)' : 'Show 8')
+                  : (isHi ? `सभी 28 तिमाही (${allQuartersList.length || 28})` : `Show All (${allQuartersList.length || 28})`)}
+              </button>
+            )}
+          </div>
         </div>
 
-        <div className="overflow-x-auto border border-[var(--color-border)] rounded-xl">
-          <table className="w-full text-left text-xs sm:text-sm min-w-[520px]">
-            <thead className="bg-[var(--color-surface-subtle)] border-b border-[var(--color-border)] text-xs font-bold uppercase text-[var(--color-text-muted)]">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden">
+            <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
               <tr>
-                <th className="py-3 px-3.5">{isHi ? 'तिमाही' : 'Quarter'}</th>
-                <th className="py-3 px-3.5 text-right">{isHi ? 'मूलधन (₹)' : 'Principal (₹)'}</th>
-                <th className="py-3 px-3.5 text-right">{isHi ? 'ब्याज (₹)' : 'Interest (₹)'}</th>
-                <th className="py-3 px-3.5 text-right">{isHi ? 'कुल किस्त (₹)' : 'Total Installment (₹)'}</th>
-                <th className="py-3 px-3.5 text-right">{isHi ? 'शेष ऋण (₹)' : 'Remaining Balance (₹)'}</th>
+                <th className="p-3">#</th>
+                <th className="p-3">{isHi ? 'तिमाही' : 'Quarter'}</th>
+                <th className="p-3 text-right">{isHi ? 'मूलधन (₹)' : 'Principal (₹)'}</th>
+                <th className="p-3 text-right">{isHi ? 'ब्याज (₹)' : 'Interest (₹)'}</th>
+                <th className="p-3 text-right">{isHi ? 'कुल किस्त (₹)' : 'Total Debt Service (₹)'}</th>
+                <th className="p-3 text-right">{isHi ? 'शेष ऋण (₹)' : 'Remaining Balance (₹)'}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--color-border)]">
-              {visibleQuarters.map((row) => (
-                <tr key={row.quarter} className="hover:bg-[var(--color-surface-subtle)] transition-colors">
-                  <td className="py-2.5 px-3.5 font-bold text-[var(--color-text)]">
-                    {row.quarter_number ? `Q${row.quarter_number} (${row.quarter})` : row.quarter}
-                  </td>
-                  <td className="py-2.5 px-3.5 text-right font-medium text-[var(--color-positive)] tabular-nums">
-                    ₹{Math.round(row.principal).toLocaleString('en-IN')}
-                  </td>
-                  <td className="py-2.5 px-3.5 text-right font-medium text-[var(--color-caution)] tabular-nums">
-                    ₹{Math.round(row.interest).toLocaleString('en-IN')}
-                  </td>
-                  <td className="py-2.5 px-3.5 text-right font-bold text-[var(--color-text)] tabular-nums">
-                    ₹{Math.round(row.total_payment).toLocaleString('en-IN')}
-                  </td>
-                  <td className="py-2.5 px-3.5 text-right text-[var(--color-text-muted)] tabular-nums">
-                    ₹{Math.round(row.remaining_balance || 0).toLocaleString('en-IN')}
-                  </td>
+            <tbody className="divide-y divide-slate-100 text-slate-800">
+              {filteredQuarters.map((q, idx) => (
+                <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
+                  <td className="p-3 text-slate-400 font-sans">{idx + 1}</td>
+                  <td className="p-3 font-semibold">{q.quarter || `Y${Math.ceil((idx+1)/4)}-Q${((idx)%4)+1}`}</td>
+                  <td className="p-3 text-right font-mono">₹{Math.round(q.principal || 0).toLocaleString('en-IN')}</td>
+                  <td className="p-3 text-right font-mono text-amber-600">₹{Math.round(q.interest || 0).toLocaleString('en-IN')}</td>
+                  <td className="p-3 text-right font-mono font-bold text-emerald-700">₹{Math.round(q.total_payment || 0).toLocaleString('en-IN')}</td>
+                  <td className="p-3 text-right font-mono text-slate-500">₹{Math.round(q.remaining_balance || 0).toLocaleString('en-IN')}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-
-        {quarterly_repayment && quarterly_repayment.length > 8 && (
-          <div className="pt-2 text-center">
-            <button
-              onClick={() => setShowAllQuarters(!showAllQuarters)}
-              className="gd-btn-secondary text-xs min-h-[36px] py-1.5 px-4"
-            >
-              <span>
-                {showAllQuarters
-                  ? (isHi ? 'कम दिखाएं' : 'Show Less')
-                  : (isHi ? `सभी ${quarterly_repayment.length} तिमाहियां देखें` : `Show All ${quarterly_repayment.length} Quarters`)}
-              </span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showAllQuarters ? 'rotate-180' : ''}`} />
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

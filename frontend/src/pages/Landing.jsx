@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   ArrowRight,
-  CheckCircle2,
-  Check,
-  Sparkles,
-  ShieldCheck,
-  TrendingUp,
   Building2,
   FileCheck,
+  Landmark,
+  ShieldCheck,
+  Coins,
+  Store,
+  Milk,
+  Egg,
+  Wheat,
+  Scissors,
+  Tractor,
+  Wrench,
+  Palette,
+  Sparkles,
+  ChevronRight,
+  TrendingUp,
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 
@@ -18,462 +27,529 @@ const ENTERPRISES = [
     id: 'dairy',
     name: 'Dairy & Milk Chilling',
     name_hi: 'डेयरी व दुग्ध केंद्र',
-    icon: '🥛',
+    icon: Milk,
     tag_hi: 'दैनिक आय',
-    tag_en: 'Daily income',
-    capital: 100000,
-    cost: 1000000,
-    loan: 900000,
-    emi: 14028,
+    tag_en: 'Daily Cash Flow',
+    defaultCapital: 100000,
     profit_hi: '₹28,000 - ₹35,000',
     profit_en: '₹28,000 - ₹35,000',
-    scheme_hi: 'मुद्रा लोन (तरुण) / नाबार्ड',
-    scheme_en: 'PMMY Tarun / NABARD',
-    desc_hi: 'पशुपालकों से दूध संकलन व चिलिंग सप्लाई। स्थिर दैनिक मांग।',
-    desc_en: 'Milk procurement and chilling supply with steady daily demand.',
+    desc_hi: 'पशुपालकों से दूध संकलन, चिलिंग व क्षेत्रीय थोक आपूर्ति।',
+    desc_en: 'Procurement, chilling, and regional bulk supply with steady demand.',
   },
   {
     id: 'retail',
     name: 'Kirana & General Store',
     name_hi: 'किराना व जनरल स्टोर',
-    icon: '🏪',
+    icon: Store,
     tag_hi: 'स्थिर मांग',
-    tag_en: 'Steady demand',
-    capital: 50000,
-    cost: 500000,
-    loan: 450000,
-    emi: 7014,
+    tag_en: 'Steady FMCG',
+    defaultCapital: 50000,
     profit_hi: '₹18,000 - ₹24,000',
     profit_en: '₹18,000 - ₹24,000',
-    scheme_hi: 'मुद्रा लोन (किशोर)',
-    scheme_en: 'PMMY Kishor',
-    desc_hi: 'दैनिक घरेलू राशन, खाद्य सामग्री और आवश्यक वस्तुएं।',
-    desc_en: 'Essential household groceries and packaged consumer goods.',
+    desc_hi: 'दैनिक घरेलू राशन, पैकेज्ड सामग्री व आवश्यक किराना वस्तुएं।',
+    desc_en: 'Essential household provisions, grocery inventory, and staples.',
   },
   {
     id: 'poultry',
     name: 'Poultry Farming',
     name_hi: 'मुर्गी पालन (पोल्ट्री)',
-    icon: '🐔',
-    tag_hi: 'उच्च मुनाफा',
-    tag_en: 'High margin',
-    capital: 150000,
-    cost: 1500000,
-    loan: 1350000,
-    emi: 21040,
+    icon: Egg,
+    tag_hi: 'उच्च प्रतिफल',
+    tag_en: 'High Yield',
+    defaultCapital: 150000,
     profit_hi: '₹35,000 - ₹45,000',
     profit_en: '₹35,000 - ₹45,000',
-    scheme_hi: 'पशुधन मिशन / बैंक लोन',
-    scheme_en: 'National Livestock / Bank Loan',
-    desc_hi: 'अंडे व ब्रायलर उत्पादन, स्थानीय बाजारों में सीधी बिक्री।',
-    desc_en: 'Layer egg and broiler meat supply to regional rural markets.',
+    desc_hi: 'अंडे व ब्रायलर उत्पादन, हाट-बाजारों व थोक खरीदारों को आपूर्ति।',
+    desc_en: 'Broiler and layer egg production with institutional market channels.',
   },
   {
     id: 'food_processing',
     name: 'Flour Mill & Spices',
     name_hi: 'आटा चक्की व मसाला पिसाई',
-    icon: '🌾',
-    tag_hi: 'कम लागत',
-    tag_en: 'Low risk',
-    capital: 40000,
-    cost: 400000,
-    loan: 360000,
-    emi: 5611,
+    icon: Wheat,
+    tag_hi: 'कम जोखिम',
+    tag_en: 'Low Risk',
+    defaultCapital: 40000,
     profit_hi: '₹15,000 - ₹22,000',
     profit_en: '₹15,000 - ₹22,000',
-    scheme_hi: 'मुद्रा लोन (शिशु/किशोर)',
-    scheme_en: 'PMMY Shishu / Kishor',
     desc_hi: 'गेहूं, अनाज व मसालों की दैनिक पिसाई सेवा।',
-    desc_en: 'Daily grain and spice milling service with zero inventory loss.',
+    desc_en: 'Custom grain and spice milling services with zero perishability risk.',
   },
   {
     id: 'tailoring',
     name: 'Tailoring & Garments',
     name_hi: 'सिलाई व वस्त्र केंद्र',
-    icon: '🧵',
-    tag_hi: 'महिला समूह',
-    tag_en: 'Women SHG',
-    capital: 30000,
-    cost: 300000,
-    loan: 270000,
-    emi: 4208,
+    icon: Scissors,
+    tag_hi: 'एसएचजी अनुकूल',
+    tag_en: 'SHG Friendly',
+    defaultCapital: 30000,
     profit_hi: '₹12,000 - ₹18,000',
     profit_en: '₹12,000 - ₹18,000',
-    scheme_hi: 'आजीविका मिशन (NRLM) / मुद्रा',
-    scheme_en: 'NRLM SHG / PMMY',
-    desc_hi: 'सिलाई, स्कूल ड्रेस व रेडीमेड वस्त्र निर्माण।',
-    desc_en: 'Custom apparel, school uniforms and ready-to-wear garments.',
+    desc_hi: 'कपड़े सिलाई, स्कूल यूनिफॉर्म व स्थानीय परिधान निर्माण।',
+    desc_en: 'Apparel fabrication, school uniform orders, and bespoke tailoring.',
   },
   {
     id: 'agriculture',
-    name: 'Tractor & Agro Service',
+    name: 'Tractor & Agro Hiring',
     name_hi: 'ट्रैक्टर व कृषि सेवा केंद्र',
-    icon: '🚜',
-    tag_hi: 'खेती सीजन',
-    tag_en: 'Seasonal boost',
-    capital: 200000,
-    cost: 2000000,
-    loan: 1800000,
-    emi: 28056,
+    icon: Tractor,
+    tag_hi: 'कृषि सेवा',
+    tag_en: 'Asset Rental',
+    defaultCapital: 200000,
     profit_hi: '₹40,000 - ₹55,000',
     profit_en: '₹40,000 - ₹55,000',
-    scheme_hi: 'कृषि यंत्रीकरण (SMAM) / AIF',
-    scheme_en: 'SMAM Agri Infra Fund',
-    desc_hi: 'ट्रैक्टर, रोटावेटर व थ्रेशर किराए पर देने की सेवा।',
-    desc_en: 'Farm machinery and custom hiring for sowing and harvest seasons.',
+    desc_hi: 'ट्रैक्टर, रोटावेटर व थ्रेशर का कस्टम हायरिंग केंद्र।',
+    desc_en: 'Agricultural machinery hire and tillage support during cropping cycles.',
   },
   {
     id: 'service_business',
-    name: 'Motor & Bike Workshop',
+    name: 'Motorcycle Workshop',
     name_hi: 'बाइक व ऑटो रिपेयर शॉप',
-    icon: '🔧',
-    tag_hi: 'दैनिक सेवा',
-    tag_en: 'Daily service',
-    capital: 40000,
-    cost: 400000,
-    loan: 360000,
-    emi: 5611,
+    icon: Wrench,
+    tag_hi: 'नियमित सेवा',
+    tag_en: 'Recurring Service',
+    defaultCapital: 40000,
     profit_hi: '₹16,000 - ₹24,000',
     profit_en: '₹16,000 - ₹24,000',
-    scheme_hi: 'मुद्रा लोन (किशोर)',
-    scheme_en: 'PMMY Kishor',
-    desc_hi: 'टू-व्हीलर रिपेयरिंग, स्पेयर पार्ट्स व पंचर सेवा।',
-    desc_en: 'Two-wheeler maintenance, puncture, and spare parts retail.',
+    desc_hi: 'टू-व्हीलर मरम्मत, स्पेयर पार्ट्स खुदरा व रखरखाव।',
+    desc_en: 'Two-wheeler repairs, spare part replacements, and servicing.',
   },
   {
     id: 'handicraft',
     name: 'Handicraft & Pottery',
     name_hi: 'हस्तशिल्प व कुटीर उद्योग',
-    icon: '🎨',
-    tag_hi: 'शिल्प कला',
-    tag_en: 'Artisan craft',
-    capital: 25000,
-    cost: 250000,
-    loan: 225000,
-    emi: 3507,
+    icon: Palette,
+    tag_hi: 'कारीगर संवर्धन',
+    tag_en: 'Artisan Credit',
+    defaultCapital: 25000,
     profit_hi: '₹12,000 - ₹16,000',
     profit_en: '₹12,000 - ₹16,000',
-    scheme_hi: 'पीएम विश्वकर्मा योजना',
-    scheme_en: 'PM Vishwakarma Scheme',
-    desc_hi: 'मिट्टी, लकड़ी व स्थानीय शिल्प से उत्पाद निर्माण।',
-    desc_en: 'Clay pottery, wooden craft and local artisan goods.',
+    desc_hi: 'मिट्टी, लकड़ी व स्थानीय पारंपरिक शिल्प उत्पाद निर्माण।',
+    desc_en: 'Terracotta pottery, woodcraft, and value-added artisan merchandise.',
   },
+];
+
+const PRESETS = [
+  { label: '₹25,000', value: 25000 },
+  { label: '₹50,000', value: 50000 },
+  { label: '₹1,00,000', value: 100000 },
+  { label: '₹2,00,000', value: 200000 },
+  { label: '₹5,00,000', value: 500000 },
 ];
 
 export default function Landing() {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
   const isHi = i18n.language === 'hi';
-  const [selectedEnterprise, setSelectedEnterprise] = useState(ENTERPRISES[0]);
 
-  const handleStartAssessment = (businessId, capital) => {
-    navigate('/assess', { state: { presetBusiness: businessId, presetCapital: capital } });
+  const [selectedTrade, setSelectedTrade] = useState(ENTERPRISES[0]);
+  const [capital, setCapital] = useState(50000);
+
+  // 10:90 Math Calculations
+  const projectCost = capital * 10;
+  const loanAmount = capital * 9;
+
+  // 7-Year Amortization @ 8.5%
+  const annualRate = 0.085;
+  const monthlyRate = annualRate / 12;
+  const tenureMonths = 84;
+  const emi = Math.round(
+    (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, tenureMonths)) /
+      (Math.pow(1 + monthlyRate, tenureMonths) - 1)
+  );
+
+  // Scheme Router
+  let schemeName = isHi ? 'मुद्रा योजना (शिशु)' : 'PMMY Shishu';
+  if (loanAmount > 50000 && loanAmount <= 500000) {
+    schemeName = isHi ? 'मुद्रा योजना (किशोर)' : 'PMMY Kishor';
+  } else if (loanAmount > 500000) {
+    schemeName = isHi ? 'मुद्रा योजना (तरुण) / नाबार्ड' : 'PMMY Tarun / NABARD';
+  }
+
+  const handleStart = (tradeId, customCapital) => {
+    navigate('/assess', {
+      state: {
+        presetBusiness: tradeId || selectedTrade.id,
+        presetCapital: customCapital || capital,
+      },
+    });
   };
 
+  const SelectedIcon = selectedTrade.icon;
+
   return (
-    <div className="w-full">
-
-      {/* ── 1. MODERN HERO SECTION ── */}
-      <section className="relative w-full bg-gradient-to-b from-emerald-50/50 via-white to-slate-50/60 py-16 sm:py-24 border-b border-slate-200/80 overflow-hidden">
-        {/* Subtle decorative background glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-tr from-emerald-400/10 to-teal-400/15 blur-3xl -z-10 pointer-events-none rounded-full" />
-
-        <div className="app-container text-center space-y-7 relative">
-          {/* Official Purpose Badge */}
-          <div className="inline-flex items-center justify-center gap-2.5 px-4 py-2 rounded-full bg-white border border-emerald-200/80 text-xs sm:text-sm font-bold text-slate-700 shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span className="leading-none">
+    <div className="w-full space-y-12 sm:space-y-16 pb-16">
+      {/* ── 1. HERO BANNER ── */}
+      <section className="w-full bg-white border-b border-slate-200 pt-10 sm:pt-14 pb-10 sm:pb-12">
+        <div className="app-container text-center max-w-4xl mx-auto space-y-6">
+          {/* Institutional Trust Badge */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800">
+            <Building2 className="w-4 h-4 text-emerald-700 shrink-0" />
+            <span>
               {isHi
-                ? 'भारत सरकार व राज्य आधिकारिक ऋण योजनाओं पर आधारित'
-                : 'Government of India & State Enterprise Loan Schemes'}
+                ? 'भारत सरकार व आरबीआई क्रेडिट मूल्यांकन ढांचा (PMMY • NABARD • SMAM • NRLM)'
+                : 'Govt. of India & RBI Credit Appraisal Framework (PMMY • NABARD • SMAM)'}
             </span>
           </div>
 
-          {/* High Impact Headline */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-950 tracking-tight leading-[1.15] max-w-4xl mx-auto">
+          {/* Main Headline */}
+          <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
             {isHi ? (
               <>
-                आपके गांव के लिए सही व्यापार<br />
-                <span className="bg-gradient-to-r from-emerald-600 to-teal-700 bg-clip-text text-transparent">
-                  और 90% सरकारी बैंक लोन
-                </span> की योजना
+                ग्रामीण व्यवसाय व्यवहार्यता एवं <br />
+                <span className="text-emerald-700">90% सरकारी बैंक ऋण</span> परामर्श
               </>
             ) : (
               <>
-                Discover the Right Business &<br />
-                <span className="bg-gradient-to-r from-emerald-600 to-teal-700 bg-clip-text text-transparent">
-                  Eligible 90% Bank Loan
-                </span> for Your Village
+                Rural Enterprise Viability & <br />
+                <span className="text-emerald-700">90% Bank Term Loan</span> Advisory
               </>
             )}
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
             {isHi
-              ? 'बिना किसी परेशानी के जानें कि आपके गांव में कौन सा काम सबसे ज्यादा चलेगा, बैंक से कितना लोन मिलेगा और महीने की कितनी कमाई होगी।'
-              : 'Evaluate enterprise viability, calculate eligible government term loans (90%), monthly EMI, and project returns in under one minute.'}
+              ? 'गांव की जनसंख्या, 5-15 किमी सेवा दायरा और 10% स्वयं की पूंजी के आधार पर अधिकतम स्वीकृत बैंक ऋण, 28-तिमाही ईएमआई और शुद्ध मुनाफे का सटीक वित्तीय विश्लेषण।'
+              : 'Assess rural catchment demand, eligible statutory loan schemes (PMMY / NABARD), 28-quarter amortization schedules, and DSCR bankability in under one minute.'}
           </p>
 
-          {/* Primary Action Button */}
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto">
+          {/* Primary Action Buttons */}
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-3.5">
             <Button
               to="/assess"
               size="lg"
               variant="primary"
               icon={ArrowRight}
               iconPosition="right"
-              className="w-full sm:w-auto shadow-md hover:shadow-lg text-base"
+              className="font-bold text-sm px-6 py-3 shadow-sm"
             >
-              {isHi ? 'व्यवसाय मूल्यांकन शुरू करें' : 'Start Viability Assessment'}
+              {isHi ? 'व्यवसाय मूल्यांकन शुरू करें' : 'Begin Viability Appraisal'}
+            </Button>
+            <Button
+              to="/comparison"
+              size="lg"
+              variant="secondary"
+              className="font-semibold text-sm px-6 py-3"
+            >
+              {isHi ? '8 मॉडलों की तुलना करें' : 'Compare 8 Models'}
             </Button>
           </div>
 
-          {/* Trust points */}
-          <div className="pt-8 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs sm:text-sm font-bold text-slate-600">
-            <span className="inline-flex items-center gap-2">
-              <ShieldCheck className="w-4.5 h-4.5 text-emerald-600 shrink-0" />
-              <span>{isHi ? '100% सही बैंक गणित' : '100% Exact Bank Math'}</span>
+          {/* 3 Inline Trust Anchors */}
+          <div className="pt-4 flex flex-wrap items-center justify-center gap-6 text-xs font-semibold text-slate-500">
+            <span className="inline-flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
+              <span>{isHi ? '100% सटीक वित्तीय गणित' : '100% Deterministic Math'}</span>
             </span>
-            <span className="inline-flex items-center gap-2">
-              <Building2 className="w-4.5 h-4.5 text-emerald-600 shrink-0" />
-              <span>{isHi ? 'मुद्रा व नाबार्ड योजनाएं' : 'PMMY & NABARD Rules'}</span>
+            <span className="inline-flex items-center gap-1.5">
+              <Landmark className="w-4 h-4 text-emerald-700 shrink-0" />
+              <span>{isHi ? 'आरबीआई गाइडलाइन्स अनुरूप' : 'RBI Master Circular Aligned'}</span>
             </span>
-            <span className="inline-flex items-center gap-2">
-              <FileCheck className="w-4.5 h-4.5 text-emerald-600 shrink-0" />
-              <span>{isHi ? 'बैंक-स्वीकृत PDF फाइल' : 'Bank-Ready PDF Dossier'}</span>
+            <span className="inline-flex items-center gap-1.5">
+              <FileCheck className="w-4 h-4 text-emerald-700 shrink-0" />
+              <span>{isHi ? 'बैंक DPR फाइल (PDF)' : 'Bank-Ready DPR Report'}</span>
             </span>
           </div>
         </div>
       </section>
 
-      {/* ── 2. BUSINESS MODELS & LIVE ESTIMATOR ── */}
-      <section className="w-full bg-white py-16 sm:py-24 border-b border-slate-200/80">
-        <div className="app-container space-y-9">
-          {/* Section Header */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-200 pb-6">
+      {/* ── 2. SIMPLE, ELEGANT LOAN & VIABILITY CALCULATOR ── */}
+      <section className="app-container">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+          {/* Box Header */}
+          <div className="px-6 py-5 sm:px-8 sm:py-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
-                {isHi ? 'ग्रामीण व्यवसाय मॉडल देखें' : 'Explore Rural Business Models'}
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-700">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <span>{isHi ? '10:90 ऋण एवं वित्तीय सिमुलेटर' : '10:90 Loan & Viability Calculator'}</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mt-1">
+                {isHi ? 'अपनी पूंजी के अनुसार ऋण व ईएमआई देखें' : 'Calculate Your Loan Eligibility & Monthly EMI'}
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 font-medium mt-1">
-                {isHi
-                  ? 'नीचे दिए गए किसी भी व्यवसाय पर क्लिक करें और अनुमानित लागत, लोन व मुनाफे का हिसाब देखें।'
-                  : 'Select an enterprise below to preview loan eligibility, capital requirements, and projected profit.'}
-              </p>
             </div>
-            <span className="text-xs sm:text-sm font-bold text-slate-400 shrink-0 bg-slate-100 px-3 py-1.5 rounded-xl">
-              {isHi ? '8 प्रमुख श्रेणियां' : '8 Core Categories'}
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/70 border border-emerald-200 text-xs font-bold text-emerald-800 self-start sm:self-auto">
+              <ShieldCheck className="w-4 h-4 text-emerald-700" />
+              <span>{isHi ? '10% पूंजी = 90% बैंक ऋण' : '10% Margin = 90% Term Loan'}</span>
             </span>
           </div>
 
-          {/* 8 Modern Business Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4.5 items-stretch">
-            {ENTERPRISES.map((ent) => {
-              const isSelected = selectedEnterprise.id === ent.id;
-              return (
-                <button
-                  key={ent.id}
-                  type="button"
-                  onClick={() => setSelectedEnterprise(ent)}
-                  className={`p-5 rounded-2xl flex flex-col justify-between text-left transition-all duration-200 cursor-pointer relative bg-white h-full ${
-                    isSelected
-                      ? 'border-2 border-emerald-600 ring-4 ring-emerald-500/15 shadow-md -translate-y-0.5'
-                      : 'border border-slate-200 hover:border-slate-300 hover:shadow-sm hover:-translate-y-0.5'
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center justify-between w-full mb-3.5">
-                      {/* Standardized Modern Icon Tile */}
-                      <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-center text-2xl shrink-0 shadow-2xs">
-                        {ent.icon}
-                      </div>
-
-                      {/* Standardized Category Chip Tag */}
-                      {isSelected ? (
-                        <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs shrink-0 shadow-xs">
-                          <Check className="w-3.5 h-3.5" />
-                        </span>
-                      ) : (
-                        <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200 leading-tight">
-                          {isHi ? ent.tag_hi : ent.tag_en}
-                        </span>
-                      )}
-                    </div>
-
-                    <h3 className="text-base font-black text-slate-900 leading-tight">
-                      {isHi ? ent.name_hi : ent.name}
-                    </h3>
-                  </div>
-
-                  {/* Description */}
-                  <div className="mt-3.5 pt-3 border-t border-slate-100">
-                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed min-h-[36px]">
-                      {isHi ? ent.desc_hi : ent.desc_en}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* ── Modern Detail Band Panel ── */}
-          <div className="mt-8 sm:mt-12 p-6 sm:p-9 rounded-3xl bg-gradient-to-br from-slate-50 to-emerald-50/30 border border-slate-200/80 shadow-sm space-y-7">
-            {/* Detail Band Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 border-b border-slate-200/80 pb-6">
-              <div className="flex items-center gap-4.5">
-                <div className="w-16 h-16 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-3xl shrink-0 shadow-xs">
-                  {selectedEnterprise.icon}
+          {/* Calculator Body: 2 Clean Columns */}
+          <div className="p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            {/* Left Column: Simple Inputs */}
+            <div className="lg:col-span-7 space-y-6 flex flex-col justify-between">
+              {/* Input 1: Enterprise Dropdown */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+                  {isHi ? '1. व्यवसाय का चयन करें:' : '1. Select Rural Enterprise:'}
+                </label>
+                <div className="relative">
+                  <select
+                    value={selectedTrade.id}
+                    onChange={(e) => {
+                      const found = ENTERPRISES.find((ent) => ent.id === e.target.value);
+                      if (found) {
+                        setSelectedTrade(found);
+                        setCapital(found.defaultCapital);
+                      }
+                    }}
+                    className="doc-select font-semibold text-slate-900 bg-white pr-10 cursor-pointer"
+                  >
+                    {ENTERPRISES.map((ent) => (
+                      <option key={ent.id} value={ent.id}>
+                        {isHi ? `${ent.name_hi} (${ent.tag_hi})` : `${ent.name} (${ent.tag_en})`}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <div>
-                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 leading-tight">
-                    {isHi ? selectedEnterprise.name_hi : selectedEnterprise.name}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 font-medium mt-1">
-                    {isHi ? selectedEnterprise.desc_hi : selectedEnterprise.desc_en}
-                  </p>
+                <p className="text-xs text-slate-500">
+                  {isHi ? selectedTrade.desc_hi : selectedTrade.desc_en}
+                </p>
+              </div>
+
+              {/* Input 2: Margin Capital Slider */}
+              <div className="space-y-3 pt-4 border-t border-slate-100">
+                <div className="flex items-baseline justify-between">
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    {isHi ? '2. आपकी स्वयं की उपलब्ध पूंजी (10% Margin):' : '2. Your Margin Capital (10% Equity):'}
+                  </label>
+                  <span className="font-mono text-2xl sm:text-3xl font-bold text-emerald-700">
+                    ₹{capital.toLocaleString('en-IN')}
+                  </span>
+                </div>
+
+                {/* Range Slider */}
+                <input
+                  type="range"
+                  min={10000}
+                  max={500000}
+                  step={5000}
+                  value={capital}
+                  onChange={(e) => setCapital(Number(e.target.value))}
+                  className="interactive-slider w-full"
+                  aria-label="Margin capital slider"
+                />
+
+                <div className="flex justify-between text-[11px] text-slate-400 font-medium">
+                  <span>Min: ₹10,000</span>
+                  <span>Max: ₹5,00,000</span>
+                </div>
+
+                {/* Presets */}
+                <div className="flex flex-wrap items-center gap-2 pt-2">
+                  <span className="text-xs font-semibold text-slate-500 mr-1">
+                    {isHi ? 'त्वरित चयन:' : 'Quick Presets:'}
+                  </span>
+                  {PRESETS.map((p) => {
+                    const isSelected = capital === p.value;
+                    return (
+                      <button
+                        key={p.value}
+                        type="button"
+                        onClick={() => setCapital(p.value)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                          isSelected
+                            ? 'bg-emerald-700 text-white shadow-xs font-bold'
+                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        }`}
+                      >
+                        {p.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Clean Bankable Financial Summary */}
+            <div className="lg:col-span-5 bg-slate-50 rounded-2xl border border-slate-200/80 p-6 flex flex-col justify-between space-y-6">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-4">
+                  {isHi ? 'बैंक ऋण एवं किस्त सारांश' : 'Bank Credit & Repayment Summary'}
+                </span>
+
+                <div className="space-y-4">
+                  {/* Sanctioned Loan */}
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-200/80">
+                    <div>
+                      <span className="text-xs text-slate-600 font-medium block">
+                        {isHi ? 'पात्र बैंक ऋण (90%)' : 'Sanctioned Term Loan (90%)'}
+                      </span>
+                      <span className="font-mono text-2xl font-bold text-emerald-700">
+                        ₹{loanAmount.toLocaleString('en-IN')}
+                      </span>
+                    </div>
+                    <span className="text-xs font-bold text-emerald-800 bg-emerald-100/70 px-2.5 py-1 rounded-md border border-emerald-200 text-right">
+                      {schemeName}
+                    </span>
+                  </div>
+
+                  {/* Monthly EMI */}
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-200/80">
+                    <div>
+                      <span className="text-xs text-slate-600 font-medium block">
+                        {isHi ? 'मासिक बैंक किस्त (EMI)' : 'Monthly Debt (EMI)'}
+                      </span>
+                      <span className="font-mono text-xl font-bold text-slate-900">
+                        ₹{emi.toLocaleString('en-IN')}{' '}
+                        <span className="text-xs font-normal text-slate-500">/{isHi ? 'माह' : 'mo'}</span>
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-medium text-slate-500">
+                      7 Yrs @ 8.5% p.a.
+                    </span>
+                  </div>
+
+                  {/* Monthly Surplus */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-xs text-slate-600 font-medium block">
+                        {isHi ? 'अनुमानित मासिक शुद्ध आय' : 'Est. Monthly Net Surplus'}
+                      </span>
+                      <span className="font-mono text-lg font-bold text-slate-900">
+                        {isHi ? selectedTrade.profit_hi : selectedTrade.profit_en}
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-semibold text-emerald-700">
+                      {isHi ? 'किस्त भुगतान उपरांत' : 'Post-EMI Surplus'}
+                    </span>
+                  </div>
                 </div>
               </div>
 
               {/* Action Button */}
-              <Button
-                onClick={() => handleStartAssessment(selectedEnterprise.id, selectedEnterprise.capital)}
-                size="md"
-                variant="primary"
-                icon={ArrowRight}
-                iconPosition="right"
-                className="shrink-0 shadow-sm"
-              >
-                {isHi ? 'इस व्यवसाय की पूरी जांच करें' : 'Evaluate This Business'}
-              </Button>
-            </div>
-
-            {/* 4 Unified Modern Elevated Data Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4.5">
-              {/* Box 1: Monthly Profit */}
-              <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/80 space-y-2 shadow-xs">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block leading-tight">
-                  {isHi ? 'मासिक शुद्ध बचत' : 'Estimated Monthly Profit'}
-                </span>
-                <div className="text-2xl sm:text-3xl font-black text-emerald-700 tabular-nums">
-                  {isHi ? selectedEnterprise.profit_hi : selectedEnterprise.profit_en}
-                </div>
-                <span className="text-[11px] text-slate-500 font-medium block leading-tight">
-                  {isHi ? 'किस्त व खर्चे काटने के बाद' : 'Net in hand after EMI & costs'}
-                </span>
-              </div>
-
-              {/* Box 2: Govt Loan */}
-              <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/80 space-y-2 shadow-xs">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block leading-tight">
-                  {isHi ? 'सरकारी बैंक लोन (90%)' : 'Bank Loan (90%)'}
-                </span>
-                <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums">
-                  ₹{(selectedEnterprise.loan / 100000).toFixed(1)} {isHi ? 'लाख' : 'Lakh'}
-                </div>
-                <span className="text-[11px] text-slate-500 font-medium block truncate leading-tight">
-                  {isHi ? selectedEnterprise.scheme_hi : selectedEnterprise.scheme_en}
-                </span>
-              </div>
-
-              {/* Box 3: Monthly EMI */}
-              <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/80 space-y-2 shadow-xs">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block leading-tight">
-                  {isHi ? 'मासिक बैंक किस्त (EMI)' : 'Monthly Bank EMI'}
-                </span>
-                <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums">
-                  ₹{selectedEnterprise.emi.toLocaleString('en-IN')}{' '}
-                  <span className="text-xs font-normal text-slate-500">/{isHi ? 'माह' : 'mo'}</span>
-                </div>
-                <span className="text-[11px] text-slate-500 font-medium block leading-tight">
-                  {isHi ? '7 वर्ष @ 8.5% वार्षिक दर' : '7 Years @ 8.5% Interest'}
-                </span>
-              </div>
-
-              {/* Box 4: Capital Needed */}
-              <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/80 space-y-2 shadow-xs">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block leading-tight">
-                  {isHi ? 'आपकी बचत (10%)' : 'Your Margin (10%)'}
-                </span>
-                <div className="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums">
-                  ₹{(selectedEnterprise.capital / 100000).toFixed(1)} {isHi ? 'लाख' : 'Lakh'}
-                </div>
-                <span className="text-[11px] text-slate-500 font-medium block leading-tight">
-                  {isHi ? `कुल लागत: ₹${(selectedEnterprise.cost / 100000)} लाख` : `Total Cost: ₹${(selectedEnterprise.cost / 100000)} Lakh`}
-                </span>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => handleStart(selectedTrade.id, capital)}
+                  className="w-full py-3.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm hover:shadow-md"
+                >
+                  <span>
+                    {isHi
+                      ? `इस व्यवसाय का पूर्ण मूल्यांकन करें`
+                      : `Start Viability Appraisal for ${selectedTrade.name}`}
+                  </span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── 3. THREE MODERN VALUE PILLARS ── */}
-      <section className="w-full bg-slate-50/70 py-16 sm:py-24">
-        <div className="app-container space-y-10">
-          <div className="text-center space-y-2.5">
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
-              {isHi ? 'ग्रामदिशा एआई आपकी कैसे मदद करता है?' : 'How GramDisha AI Works For You'}
+      {/* ── 3. 8 CURATED RURAL ENTERPRISES GRID ── */}
+      <section className="app-container space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-200 pb-4">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 block mb-1">
+              {isHi ? 'मानकीकृत व्यवसाय मॉडल' : 'Standardized Enterprise Models'}
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              {isHi ? '8 प्रमुख ग्रामीण व्यवसाय श्रेणियां' : 'Explore 8 Curated Rural Trade Blueprints'}
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-xl mx-auto">
+          </div>
+          <span className="text-xs text-slate-500">
+            {isHi ? 'किसी भी मॉडल पर क्लिक करके तुरंत मूल्यांकन करें' : 'Click any model to load preset and start appraisal'}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {ENTERPRISES.map((ent) => {
+            const Icon = ent.icon;
+            return (
+              <button
+                key={ent.id}
+                type="button"
+                onClick={() => handleStart(ent.id, ent.defaultCapital)}
+                className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-emerald-600 hover:shadow-md transition-all text-left flex flex-col justify-between group cursor-pointer"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 group-hover:bg-emerald-700 group-hover:text-white transition-colors">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                      {isHi ? ent.tag_hi : ent.tag_en}
+                    </span>
+                  </div>
+
+                  <h3 className="text-base font-bold text-slate-900 leading-snug group-hover:text-emerald-800 transition-colors">
+                    {isHi ? ent.name_hi : ent.name}
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1.5 line-clamp-2 leading-relaxed">
+                    {isHi ? ent.desc_hi : ent.desc_en}
+                  </p>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                  <span className="font-semibold text-emerald-700">
+                    {isHi ? ent.profit_hi : ent.profit_en}
+                  </span>
+                  <span className="text-slate-400 group-hover:text-emerald-700 font-bold flex items-center gap-1">
+                    {isHi ? 'मूल्यांकन' : 'Appraise'} <ChevronRight className="w-3.5 h-3.5" />
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ── 3. METHODOLOGY PILLARS ── */}
+      <section className="app-container space-y-6">
+        <div className="text-center max-w-2xl mx-auto space-y-1.5">
+          <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 block">
+            {isHi ? 'कार्यप्रणाली' : 'Appraisal Methodology'}
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            {isHi ? 'ग्रामदिशा एआई कैसे कार्य करता है' : 'How GramDisha Appraises Feasibility'}
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 space-y-3 shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
+              <Store className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-bold text-slate-900">
+              {isHi ? '1. क्षेत्रीय सेवा दायरा व मांग' : '1. Catchment Radius & Demand'}
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
               {isHi
-                ? 'सरकारी योजनाओं और गणितीय सूत्रों के आधार पर आपके गांव के लिए सही वित्तीय फैसला लें।'
-                : 'Deterministic banking models and hyper-local intelligence combined for sound enterprise decisions.'}
+                ? 'गांव की आबादी, 5-15 किमी सेवा दायरा और स्थानीय हाट-बाजार प्रतियोगिता के आधार पर वास्तविक राजस्व क्षमता का आंकलन।'
+                : 'Synthesizes demographic data, 5–15 km village catchment radius, and competitor density for realistic revenue.'}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="gd-card p-7 space-y-4 bg-white flex flex-col justify-between gd-card-hover">
-              <div className="space-y-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200/60 flex items-center justify-center text-2xl shrink-0 shadow-2xs">
-                  📍
-                </div>
-                <h3 className="text-lg font-black text-slate-900">
-                  {isHi ? 'गांव की बाजार मांग' : 'Local Market Catchment'}
-                </h3>
-                <p className="text-sm text-slate-600 font-medium leading-relaxed">
-                  {isHi
-                    ? 'आपके गांव की आबादी, नजदीकी हाट-बाजार और प्रतियोगिता के अनुसार सही उत्पाद का चयन।'
-                    : 'Analyses village population, catchment radius, and competitor density for realistic demand estimation.'}
-                </p>
-              </div>
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 space-y-3 shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
+              <Landmark className="w-5 h-5" />
             </div>
+            <h3 className="text-base font-bold text-slate-900">
+              {isHi ? '2. सरकारी योजना व 90% ऋण रूटिंग' : '2. Statutory Scheme Routing'}
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {isHi
+                ? 'मुद्रा (शिशु/किशोर/तरुण), नाबार्ड, एवं एनआरएलएम के वैधानिक नियमों के तहत 90% रियायती ऋण की पात्रता सुनिश्चित करना।'
+                : 'Automated policy routing across PMMY, NABARD, and NRLM credit guarantee frameworks.'}
+            </p>
+          </div>
 
-            <div className="gd-card p-7 space-y-4 bg-white flex flex-col justify-between gd-card-hover">
-              <div className="space-y-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200/60 flex items-center justify-center text-2xl shrink-0 shadow-2xs">
-                  🏛️
-                </div>
-                <h3 className="text-lg font-black text-slate-900">
-                  {isHi ? 'सरकारी योजना व लोन' : 'Government Loan Schemes'}
-                </h3>
-                <p className="text-sm text-slate-600 font-medium leading-relaxed">
-                  {isHi
-                    ? 'प्रधानमंत्री मुद्रा योजना, नाबार्ड, स्टैंड-अप इंडिया के तहत 90% तक बैंक लोन की पात्रता।'
-                    : 'Deterministic rules for PMMY (Shishu/Kishor/Tarun), NABARD, and NRLM credit schemes.'}
-                </p>
-              </div>
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 space-y-3 shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
+              <FileCheck className="w-5 h-5" />
             </div>
-
-            <div className="gd-card p-7 space-y-4 bg-white flex flex-col justify-between gd-card-hover">
-              <div className="space-y-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200/60 flex items-center justify-center text-2xl shrink-0 shadow-2xs">
-                  📄
-                </div>
-                <h3 className="text-lg font-black text-slate-900">
-                  {isHi ? 'बैंक के लिए तैयार फाइल' : 'Bank-Ready PDF Proposal'}
-                </h3>
-                <p className="text-sm text-slate-600 font-medium leading-relaxed">
-                  {isHi
-                    ? 'बैंक मैनेजर को दिखाने के लिए 28-तिमाही किस्त तालिका व संपूर्ण डीपीआर फाइल तुरंत डाउनलोड करें।'
-                    : 'Instant downloadable Detailed Project Report (DPR) with 28-quarter amortization schedule and DSCR calculations.'}
-                </p>
-              </div>
-            </div>
+            <h3 className="text-base font-bold text-slate-900">
+              {isHi ? '3. बैंक-स्वीकृत प्रोजेक्ट रिपोर्ट (DPR)' : '3. Bank-Ready DPR Dossier'}
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {isHi
+                ? 'बैंक शाखा प्रबंधक को प्रस्तुत करने योग्य 28-तिमाही किस्त सारणी, डीएससीआर विश्लेषण व औपचारिक प्रस्ताव फाइल।'
+                : 'Generates formal printable Detailed Project Reports with full 28-quarter amortization ledgers and DSCR indicators.'}
+            </p>
           </div>
         </div>
       </section>
-
     </div>
   );
 }

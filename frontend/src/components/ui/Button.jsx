@@ -2,8 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 /**
- * Standardized Modern Button Component for GramDisha AI
- * High-end elevation, refined pill/rounded geometry, and crisp icon rhythm.
+ * Institutional Button Component for GramDisha AI
+ * Credible banking authority with deep institutional green and crisp typography.
  */
 export default function Button({
   children,
@@ -21,28 +21,28 @@ export default function Button({
   ...props
 }) {
   const baseClasses =
-    'inline-flex items-center justify-center font-bold rounded-2xl transition-all duration-200 select-none cursor-pointer text-center';
+    'inline-flex items-center justify-center font-bold rounded-lg transition-all duration-150 select-none cursor-pointer text-center';
 
   const sizeClasses = {
-    sm: 'px-4 py-2 min-h-[40px] text-xs gap-2',
-    md: 'px-5 py-2.5 min-h-[46px] text-sm gap-2.5',
-    lg: 'px-7 py-3.5 min-h-[52px] text-base gap-3 shadow-md hover:shadow-lg',
+    sm: 'px-3.5 py-1.5 min-h-[38px] text-xs gap-1.5',
+    md: 'px-5 py-2.5 min-h-[44px] text-sm gap-2',
+    lg: 'px-6 py-3 min-h-[48px] text-base gap-2.5 shadow-xs',
   };
 
   const variantClasses = {
     primary:
-      'bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 active:from-emerald-800 active:to-emerald-900 text-white shadow-sm hover:-translate-y-0.5 active:translate-y-0 border border-emerald-500/30',
+      'bg-[#144A38] hover:bg-[#0E3B2C] active:bg-[#092B20] text-white shadow-xs border border-[#0D382B]',
     secondary:
-      'bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-900 border border-slate-200 hover:border-slate-300 shadow-xs hover:-translate-y-0.5 active:translate-y-0',
+      'bg-white hover:bg-[#F2EEE5] active:bg-[#EAE4D6] text-[#1B221E] border border-[#C7BCA9] shadow-2xs',
     outline:
-      'bg-transparent hover:bg-slate-100/80 text-slate-800 border border-slate-300',
+      'bg-transparent hover:bg-[#F2EEE5] text-[#1B221E] border border-[#C7BCA9]',
     danger:
-      'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-sm',
+      'bg-[#BA1A1A] hover:bg-[#961212] text-white shadow-xs border border-[#800F0F]',
   };
 
   const widthClass = fullWidth ? 'w-full' : '';
   const disabledClass = disabled
-    ? 'opacity-50 cursor-not-allowed pointer-events-none'
+    ? 'opacity-40 cursor-not-allowed pointer-events-none'
     : '';
 
   const combinedClasses = `${baseClasses} ${sizeClasses[size] || sizeClasses.md} ${
@@ -52,11 +52,7 @@ export default function Button({
   const iconElement = Icon ? (
     <Icon
       className={`shrink-0 ${
-        size === 'sm' ? 'w-4 h-4' : size === 'lg' ? 'w-5 h-5' : 'w-4.5 h-4.5'
-      } ${
-        iconPosition === 'right'
-          ? 'transition-transform group-hover:translate-x-0.5'
-          : ''
+        size === 'sm' ? 'w-3.5 h-3.5' : size === 'lg' ? 'w-4.5 h-4.5' : 'w-4 h-4'
       }`}
     />
   ) : null;

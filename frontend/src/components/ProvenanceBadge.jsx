@@ -1,65 +1,48 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ShieldCheck, Database, Sparkles, BookOpen } from 'lucide-react';
+import { Info, Calculator, FileCheck, Database, Sparkles } from 'lucide-react';
 
+/**
+ * Quiet Data-Provenance Indicator
+ * Restrained, neutral metadata marker signaling data derivation methodology.
+ */
 export default function ProvenanceBadge({ type = 'calculated', className = '' }) {
   const { i18n } = useTranslation();
   const isHi = i18n.language === 'hi';
 
-  const badgeConfigs = {
+  const configs = {
     calculated: {
-      label: isHi ? 'गणित द्वारा सत्यापित' : 'Calculated',
-      desc: isHi ? 'शुद्ध वित्तीय सूत्रों से गणितीय गणना' : 'Computed by deterministic formula',
-      icon: ShieldCheck,
-      style: {
-        backgroundColor: 'var(--color-positive-bg)',
-        color: 'var(--color-positive)',
-        borderColor: 'var(--color-positive-border)',
-      },
+      label: isHi ? 'सूत्र गणना' : 'Formula Derived',
+      desc: isHi ? 'भारतीय रिजर्व बैंक व वित्तीय सूत्रों द्वारा सत्यापित' : 'Calculated via standard banking amortization models',
+      icon: Calculator,
     },
     official_rule: {
-      label: isHi ? 'आधिकारिक योजना नियम' : 'Official Scheme Rule',
-      desc: isHi ? 'सरकारी योजना मानदंडों पर आधारित' : 'RBI / Scheme official parameter',
-      icon: BookOpen,
-      style: {
-        backgroundColor: 'var(--color-rule-bg)',
-        color: 'var(--color-rule)',
-        borderColor: 'var(--color-rule-border)',
-      },
+      label: isHi ? 'योजना नियम' : 'Govt Rule Mandate',
+      desc: isHi ? 'मुद्रा / नाबार्ड आधिकारिक दिशानिर्देश' : 'Official scheme guideline parameter (PMMY / NABARD)',
+      icon: FileCheck,
     },
     prototype: {
-      label: isHi ? 'प्रोटोटाइप डेटा' : 'Prototype Demo Data',
-      desc: isHi ? 'प्रदर्शन हेतु सांकेतिक डेटा' : 'Curated local baseline data',
+      label: isHi ? 'क्षेत्र सर्वेक्षण' : 'Regional Survey',
+      desc: isHi ? 'ग्रामीण बाजार व हाट सर्वेक्षण डेटा' : 'Local catchment market benchmark',
       icon: Database,
-      style: {
-        backgroundColor: 'var(--color-caution-bg)',
-        color: 'var(--color-caution)',
-        borderColor: 'var(--color-caution-border)',
-      },
     },
     ai_advisory: {
-      label: isHi ? 'एआई रणनीतिक सलाह' : 'AI Advisory',
-      desc: isHi ? 'कृत्रिम बुद्धिमत्ता आधारित विश्लेषण' : 'Contextual AI synthesis',
+      label: isHi ? 'विश्लेषण सलाह' : 'Advisory Note',
+      desc: isHi ? 'स्थानिक व क्षेत्रीय परिस्थितियों का विश्लेषण' : 'Strategic market insights tailored to location',
       icon: Sparkles,
-      style: {
-        backgroundColor: 'var(--color-advisory-bg)',
-        color: 'var(--color-advisory)',
-        borderColor: 'var(--color-advisory-border)',
-      },
     },
   };
 
-  const config = badgeConfigs[type] || badgeConfigs.calculated;
+  const config = configs[type] || configs.calculated;
   const Icon = config.icon;
 
   return (
     <span
       title={config.desc}
-      style={config.style}
-      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-semibold border transition-opacity cursor-help select-none shrink-0 ${className}`}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200 cursor-help select-none shrink-0 ${className}`}
     >
-      <Icon className="w-3.5 h-3.5 shrink-0" />
-      <span className="whitespace-nowrap">{config.label}</span>
+      <Icon className="w-3 h-3 text-slate-500 shrink-0" />
+      <span>{config.label}</span>
     </span>
   );
 }
