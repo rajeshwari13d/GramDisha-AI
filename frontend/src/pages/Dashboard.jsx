@@ -18,6 +18,7 @@ import {
   Sliders,
   CheckCircle2,
   TrendingUp,
+  ClipboardCheck,
 } from 'lucide-react';
 import { AnalysisContext } from '../App';
 import { getReport } from '../services/api';
@@ -26,13 +27,14 @@ import RadialGauge from '../components/RadialGauge';
 import ProvenanceBadge from '../components/ProvenanceBadge';
 
 export default function Dashboard() {
-  const { analysis } = useContext(AnalysisContext);
+  const { analysis, setIsSurveyOpen } = useContext(AnalysisContext);
   const { i18n } = useTranslation();
   const navigate = useNavigate();
   const isHi = i18n.language === 'hi';
   const [activeTab, setActiveTab] = useState('overview');
 
   const initialCap = analysis?.financial?.margin_capital || analysis?.financial?.margin_money || 100000;
+
   const [simCapital, setSimCapital] = useState(initialCap);
 
   if (!analysis) {
@@ -452,6 +454,40 @@ export default function Dashboard() {
           </Link>
         </div>
       </div>
+
+      {/* ── 6. GROUND VENDOR DATA CALIBRATION CALLOUT (FIREBASE) ── */}
+      <div className="bg-linear-to-r from-emerald-50 via-teal-50 to-slate-50 border border-emerald-200/80 rounded-2xl p-5 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xs">
+        <div className="flex items-start gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-emerald-700 text-white flex items-center justify-center shrink-0 shadow-xs">
+            <ClipboardCheck className="w-5 h-5" />
+          </div>
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-2">
+              <h4 className="text-sm font-bold text-slate-900">
+                {isHi ? 'स्थानीय व्यापारिक आंकड़े साझा करें' : 'Are you a local business owner or surveyor?'}
+              </h4>
+              <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 border border-emerald-200">
+                Firebase Cloud
+              </span>
+            </div>
+            <p className="text-xs text-slate-600 max-w-2xl leading-relaxed">
+              {isHi
+                ? 'अपने क्षेत्र के वास्तविक मासिक बिक्री व खर्च के आंकड़े दर्ज करें ताकि AI ग्रामीण ऋण मॉडल्स को और अधिक सटीक बना सके।'
+                : 'Contribute real monthly revenue and operating figures from your village to train more accurate credit benchmarks.'}
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setIsSurveyOpen(true)}
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer shrink-0 self-stretch md:self-auto justify-center"
+        >
+          <ClipboardCheck className="w-4 h-4" />
+          <span>{isHi ? 'ज़मीनी डेटा दर्ज करें' : 'Contribute Ground Data'}</span>
+        </button>
+      </div>
     </div>
   );
 }
+
